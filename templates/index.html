@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+<head>
+    <meta charset="UTF-8">
+    <title>CHAT_BOT</title>
+    <script type="text/javascript" src="static/js/html5shiv.js?t=1524624425727"></script>
+    <link rel="stylesheet" type="text/css" href="static/css/all.min.css?t=1524624425727">
+    <link rel="stylesheet" type="text/css" href="static/css/swiper.min.css?t=1524624425727">
+    <link rel="stylesheet" type="text/css" href="static/css/theme.css?t=1524624425727">
+    <script type="text/javascript" src="static/js/app.js?t=1524624425727"></script>
+</head>
+<body class="app">
+<div id="wrap">
+    <div id="bdy">
+        <div class="w">
+            <div class="main">
+                <div class="inner">
+                    <div class="runner-container">
+                        <div class="runner-toolbar">
+                            <button id="run" class="runner-run" type="button">
+                                <i class="fas fa-play">
+                                </i> 执行(<u>R</u>un)
+                            </button>
+                        </div>
+                        <div class="runner-panel">
+                            <div class="ui-layout-center">
+                                <textarea id="editor" class="editor"></textarea>
+                            </div>
+                            <div class="runner-console">
+                                <div id="console"style="overflow: scroll">
+                                    <div class="console-line welcome">sending....
+                                        <span class="dotting"></span>
+                                    </div>
+                                </div>
+                                <a id="console_clear" href="javascript:;">Clear</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="static/js/app2.js?t=1524624425727"></script>-->
+</body>
+</html>
+<script type="text/javascript">
+$(function() {
+    $('#run').click(function() {
+        $.ajax({
+            url: '/api',
+            data: {"text":$('#editor').val()},
+            type: 'POST',
+            success: function(response) {
+                // console.log(response);
+                $("#console").text(response)
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    });
+});
+</script>
+<script type="text/javascript">
+$(function() {
+    $('#console_clear').click(function(){
+        $(".panel-body").text("")
+    });
+});
+</script>
