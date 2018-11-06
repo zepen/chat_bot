@@ -1,3 +1,18 @@
+﻿////////////////////////////////////////////键盘事件////////////////////////////////
+
+// 按Enter键发送信息
+$(document).keydown(function(event){
+    if(event.keyCode == 13){
+        SendMsg();
+    }
+});
+
+
+
+
+
+
+/////////////////////////////////////////////前台信息处理/////////////////////////////////////////////////////////
 // 发送信息
 function SendMsg()
 {
@@ -9,6 +24,8 @@ function SendMsg()
     else
     {
         AddMsg('default', SendMsgDispose(text.value));
+        var retMsg = AjaxSendMsg(text.value)
+        AddMsg('小龙', retMsg);
         text.value = "";
     }
 }
@@ -40,4 +57,29 @@ function CreadMsg(user, content)
         str = "<div class=\"msg robot\"><div class=\"msg-left\" worker=\"" + user + "\"><div class=\"msg-host photo\" style=\"background-image: url(../Images/head.png)\"></div><div class=\"msg-ball\" title=\"今天 17:52:06\">" + content + "</div></div></div>";
     }
     return str;
+}
+
+
+
+/////////////////////////////////////////////////////////////////////// 后台信息处理 /////////////////////////////////////////////////////////////////////////////////
+
+// 发送
+function AjaxSendMsg(_content)
+{
+    var retStr = "";
+    $.ajax({
+        type: "POST",
+        async:false,
+        url: "/Home/ChatMethod/",
+        data: {
+            content: _content
+        },
+        error: function (request) {
+            retStr = "你好";
+        },
+        success: function (data) {
+            retStr = data.info;
+        }
+    });
+    return retStr;
 }

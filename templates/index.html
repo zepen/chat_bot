@@ -1,4 +1,7 @@
-html lang="zh">
+﻿@{
+    Layout = null;
+}
+<html lang="zh">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -18,7 +21,7 @@ html lang="zh">
     <meta name="x5-fullscreen" content="true">
     <meta name="x5-page-mode" content="app">
     <base target="_blank">
-    <title>会话_聊天机器人</title>
+    <title>会话_</title>
     <link href="static/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="static/css/chat.css">
     <script src="static/js/jquery-1.10.2.min.js"></script>
@@ -40,8 +43,7 @@ html lang="zh">
                             <div class="msg robot">
                                 <div class="msg-left" worker="小龙">
                                     <div class="msg-host photo" style="background-image: url(../Images/head.png)"></div>
-                                    <div class="msg-ball" title="今天 17:52:06">你好，我是只能打字的聊天机器人
-                                        <br><br>您是想要了解哪些方面呢？</div>
+                                    <div class="msg-ball" title="今天 17:52:06">你好，我是机器人小龙                <br><br>您是想要了解哪些方面呢？</div>
                                 </div>
                             </div>
                             <div class="msg guest">
@@ -71,7 +73,7 @@ html lang="zh">
                             </div>
                         </div>
                         <div class="abs br pnl-btn" id="submit" style="background-color: rgb(32, 196, 202); color: rgb(255, 255, 255);" onclick="SendMsg()">发送</div>
-                        <div class="pnl-support" id="copyright"><a href="#">版权什么的</a></div>
+                        <div class="pnl-support" id="copyright"><a href="#"></a></div>
                     </div>
                 </div>
                 <div class="abs right pnl-right">
@@ -79,16 +81,22 @@ html lang="zh">
                     <div class="pnl-right-content">
                         <div class="pnl-tabs">
                             <div class="tab-btn active" id="hot-tab">常见问题</div>
-                            <div class="tab-btn" id="rel-tab">相关问题</div>
+                            @*<div class="tab-btn" id="rel-tab">相关问题</div>*@
                         </div>
                         <div class="pnl-hot">
                             <ul class="rel-list unselect" id="hots">
-                                <!-- <li class="rel-item">这是一个问题，这是一个问题？</li> -->
+                                @{
+                                    List<string> list = ViewData["FAQ"] as List<string>;
+                                    for(int i = 0;i < list.Count;i++)
+                                    {
+                                        <li class="rel-item">@list[i]</li>
+                                    }
+                                }
                             </ul>
                         </div>
                         <div class="pnl-rel" style="display: none;">
                             <ul class="rel-list unselect" id="rels">
-                                <!-- <li class="rel-item">这是一个问题，这是一个问题？</li> -->
+                                 <li class="rel-item">这里是相关问题</li> 
                             </ul>
                         </div>
                     </div>
