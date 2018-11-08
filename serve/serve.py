@@ -51,5 +51,3 @@ def response_info():
                         for x in con_tf_s.predict_result["predictions"][0]])
     except Exception as e:
         log.error("[response_info] " + str(e))
-
-

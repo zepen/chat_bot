@@ -7,6 +7,21 @@ from utils.loggings import log
 
 
 class LoadFiles(object):
+
+    def __init__(self):
+        pass
+
+
+class LoadCorpus(LoadFiles):
+
+    def __init__(self):
+        pass
+
+    def building_vocab_dict(self):
+        pass
+
+
+class LoadDictionary(LoadFiles):
     """
     vocab_dict: 词表 (词: 序号)
     r_vocab_dict: 反词表 (序号: 词)
