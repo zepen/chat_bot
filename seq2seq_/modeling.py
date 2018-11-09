@@ -2,19 +2,21 @@
 """
 定义seq2seq模型
 """
+import numpy as np
 import tensorflow as tf
 
 
 class Seq2SeqModel(object):
 
     def __init__(self):
-        tf.reset_default_graph()
-        gpu_options = tf.GPUOptions(allow_growth=True)
-        config = tf.ConfigProto(
-            device_count={"CPU": 8},
-            log_device_placement=True,
-            gpu_options=gpu_options
-        )
+        pass
+        # tf.reset_default_graph()
+        # gpu_options = tf.GPUOptions(allow_growth=True)
+        # config = tf.ConfigProto(
+        #     device_count={"CPU": 8},
+        #     log_device_placement=True,
+        #     gpu_options=gpu_options
+        # )
 
     def _input_layer(self):
         with tf.device('/cpu:0'):
@@ -72,22 +74,35 @@ class Seq2SeqModel(object):
         with tf.name_scope("trian_op"):
             train_op = tf.train.AdamOptimizer().minimize(loss)
 
-    def predict_fun(self):
-        def predict(sen, sess):
-            # load model
-            saver = tf.train.import_meta_graph("model/seq2seq/seq2seq.ckpt.meta")
-            saver.restore(sess, tf.train.latest_checkpoint("model/seq2seq/"))
-            x_ = np.array([[vocab_dict[s] if vocab_dict.get(s) else vocab_dict["_UNK_"] for s in sen]]).reshape(-1, 1)
-            # print(x_)
-            res = [vocab_dict["_GO_"]]
-            while 1:
-                y_ = np.array([res]).reshape(-1, 1)
-                pred = sess.run("predict/ArgMax:0",
-                                feed_dict={"inputs/encoder_inputs:0": x_, "inputs/decoder_inputs:0": y_}).T[0][-1]
-                if r_vocab_dict[pred] == "_EOS_" or r_vocab_dict[pred] == "_UNK_":
-                    break
-                res.append(pred)
-            return "".join([r_vocab_dict[y] for y in res if r_vocab_dict[y] != "_GO_"])
+    @staticmethod
+    def predict_fun(input_text, vd, rvd, con_tf_s):
+        """
+        :param input_text 输出文本
+        :param vd: 词表
+        :param rvd: 反转词表
+        :param con_tf_s 连接tensorflow serving object
+        :return:
+        """
+        data = {
+            "instances": [
+                {
+                    "encoder_inputs": [],
+                    "decoder_inputs": []
+                },
+            ]
+        }
+        x = [vd[x] if vd.get(x) else vd["_UNK_"] for x in list(input_text)]
+        data["instances"][0]["encoder_inputs"].extend(x)
+        data["instances"][0]["decoder_inputs"].extend([vd["_GO_"]])
+        res = []
+        while 1:
+            con_tf_s.calculate_predict_result(data)
+            predict_res = con_tf_s.predict_result["predictions"][0][-1]
+            if rvd[predict_res] == "_EOS_":
+                break
+            res.append(predict_res)
+            data["instances"][0]["decoder_inputs"].append(predict_res)
+        return "".join([rvd[y] for y in res])
 
     def build_model(self):
         pass

@@ -15,7 +15,7 @@ class LoadFiles(object):
 class LoadCorpus(LoadFiles):
 
     def __init__(self):
-        pass
+        super(LoadCorpus, self).__init__()
 
     def building_vocab_dict(self):
         pass
@@ -27,6 +27,7 @@ class LoadDictionary(LoadFiles):
     r_vocab_dict: 反词表 (序号: 词)
     """
     def __init__(self):
+        super(LoadDictionary, self).__init__()
         self._vocab_dict = {}
         self._r_vocab_dict = {}
         self._dict_path = "./dictionary/"
