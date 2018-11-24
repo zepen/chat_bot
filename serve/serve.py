@@ -9,13 +9,13 @@ from flask.blueprints import Blueprint
 from flask.templating import render_template
 from utils.connect import ConnectionTFServing
 from utils.loggings import log
-from utils.load_files import LoadFiles
+from utils.load_files import LoadDictionary
 
 index = Blueprint('index', __name__)
 api = Blueprint('api', __name__)
 
 con_tf_s = ConnectionTFServing()
-load_files = LoadFiles()
+load_files = LoadDictionary()
 vd = load_files.vocab_dict
 rvd = load_files.r_vocab_dict
 
