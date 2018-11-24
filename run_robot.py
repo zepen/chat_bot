@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 """
-启动服务
+启动robot
 """
 from flask import Flask
 from serve.serve import index, api

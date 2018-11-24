@@ -38,11 +38,14 @@ def main():
 def response_info():
     """  对话回复
 
-    :return:
+    :return: str
     """
     try:
-        input_text = json.loads(request.data)["message"]
-        return Seq2SeqModel.predict_fun(input_text, vd, rvd, con_tf_s)
+        if request.data:
+            input_text = json.loads(request.data)["content"]
+            return Seq2SeqModel.predict_fun(input_text, vd, rvd, con_tf_s)
+        else:
+            return "What?"
     except Exception as e:
         log.error("[response_info] " + str(e))
         return "ERROR"

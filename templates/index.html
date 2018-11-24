@@ -1,6 +1,4 @@
-﻿{#@{#}
-{#    Layout = null;#}
-{#}#}
+﻿<!DOCTYPE html>
 <html lang="zh">
 <head>
     <meta charset="utf-8">
@@ -22,10 +20,10 @@
     <meta name="x5-page-mode" content="app">
     <base target="_blank">
     <title>NLAI_BOT</title>
-    <link href="static/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="static/css/chat.css">
-    <script src="static/js/jquery-1.10.2.min.js"></script>
-    <script src="static/js/chat.js"></script>
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="/static/css/chat.css">
+    <script src="/static/js/jquery-1.10.2.min.js"></script>
+    <script src="/static/js/chat.js"></script>
 </head>
 <body lang="zh">
 {#    <img style="width:100%;height:100%" src="~/Images/chatBack.jpg">#}
@@ -42,16 +40,16 @@
                         <div class="pnl-list" id="msgs">
                             <div class="msg robot">
                                 <div class="msg-left" worker="NLAI">
-                                    <div class="msg-host photo" style="background-image: url(static/img/head.jpeg)"></div>
+                                    <div class="msg-host photo" style="background-image: url(/static/img/robot.jpeg)"></div>
                                     <div class="msg-ball" title="今天 17:52:06">你好，我是机器人NLAI</div>
                                 </div>
                             </div>
-{#                            <div class="msg guest">#}
-{#                                <div class="msg-right">#}
-{#                                    <div class="msg-host headDefault" style="background-image: url(static/img/head.jpeg)"></div>#}
+                            <div class="msg guest">
+                                <div class="msg-right">
+                                    <div class="msg-host headDefault" style="background-image: url(/static/img/user.jpeg)"></div>
 {#                                    <div class="msg-ball" title="今天 17:52:06">你好</div>#}
-{#                                </div>#}
-{#                            </div>#}
+                                </div>
+                            </div>
                         </div>
                         <div class="pnl-list hide" id="unreadLine">
                             <div class="msg min time unread">未读消息</div>

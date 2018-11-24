@@ -25,54 +25,54 @@ class Seq2SeqModel(object):
                 self.decoder_inputs = tf.placeholder(shape=(None, None), dtype=tf.int32, name='decoder_inputs')
                 self.decoder_targets = tf.placeholder(shape=(None, None), dtype=tf.int32, name='decoder_targets')
 
-    def _embedding_layer(self):
-        with tf.device('/cpu:0'):
-            with tf.name_scope("embeddings"):
-                embeddings = tf.Variable(
-                    tf.random_uniform([vocab_size, input_embedding_size], -1.0, 1.0), dtype=tf.float32)
-                encoder_inputs_embedded = tf.nn.embedding_lookup(embeddings, encoder_inputs)
-                decoder_inputs_embedded = tf.nn.embedding_lookup(embeddings, decoder_inputs)
-
-    def _encode_layer(self):
-        with tf.device('/cpu:0'):
-            with tf.name_scope("encoder"):
-                encoder_cell = tf.contrib.rnn.LSTMCell(encoder_hidden_units)
-                encoder_outputs, encoder_final_state = tf.nn.dynamic_rnn(
-                    encoder_cell, encoder_inputs_embedded,
-                    dtype=tf.float32, time_major=True,
-                )
-
-    def _decode_layer(self):
-        with tf.device('/cpu:0'):
-            with tf.name_scope("decoder"):
-                decoder_cell = tf.contrib.rnn.LSTMCell(decoder_hidden_units)
-                decoder_outputs, decoder_final_state = tf.nn.dynamic_rnn(
-                    decoder_cell, decoder_inputs_embedded,
-                    initial_state=encoder_final_state,
-                    dtype=tf.float32, time_major=True, scope="plain_decoder",
-                )
-
-    def _output_layer(self):
-        with tf.device('/cpu:0'):
-            with tf.name_scope("full_connect"):
-                decoder_logits = tf.contrib.layers.linear(decoder_outputs, vocab_size)
-            with tf.name_scope("softmax"):
-                cross_entropy = tf.nn.softmax_cross_entropy_with_logits(
-                    labels=tf.one_hot(decoder_targets, depth=vocab_size, dtype=tf.float32),
-                    logits=decoder_logits,
-                )
-    def _predict_layer(self):
-        with tf.device('/cpu:0'):
-            with tf.name_scope("predict"):
-                decoder_prediction = tf.argmax(decoder_logits, 2)
-
-    def _loss_fun(self):
-        with tf.name_scope("loss"):
-            loss = tf.reduce_mean(cross_entropy)
-
-    def _train_op(self):
-        with tf.name_scope("trian_op"):
-            train_op = tf.train.AdamOptimizer().minimize(loss)
+    # def _embedding_layer(self):
+    #     with tf.device('/cpu:0'):
+    #         with tf.name_scope("embeddings"):
+    #             embeddings = tf.Variable(
+    #                 tf.random_uniform([vocab_size, input_embedding_size], -1.0, 1.0), dtype=tf.float32)
+    #             encoder_inputs_embedded = tf.nn.embedding_lookup(embeddings, encoder_inputs)
+    #             decoder_inputs_embedded = tf.nn.embedding_lookup(embeddings, decoder_inputs)
+    #
+    # def _encode_layer(self):
+    #     with tf.device('/cpu:0'):
+    #         with tf.name_scope("encoder"):
+    #             encoder_cell = tf.contrib.rnn.LSTMCell(encoder_hidden_units)
+    #             encoder_outputs, encoder_final_state = tf.nn.dynamic_rnn(
+    #                 encoder_cell, encoder_inputs_embedded,
+    #                 dtype=tf.float32, time_major=True,
+    #             )
+    #
+    # def _decode_layer(self):
+    #     with tf.device('/cpu:0'):
+    #         with tf.name_scope("decoder"):
+    #             decoder_cell = tf.contrib.rnn.LSTMCell(decoder_hidden_units)
+    #             decoder_outputs, decoder_final_state = tf.nn.dynamic_rnn(
+    #                 decoder_cell, decoder_inputs_embedded,
+    #                 initial_state=encoder_final_state,
+    #                 dtype=tf.float32, time_major=True, scope="plain_decoder",
+    #             )
+    #
+    # def _output_layer(self):
+    #     with tf.device('/cpu:0'):
+    #         with tf.name_scope("full_connect"):
+    #             decoder_logits = tf.contrib.layers.linear(decoder_outputs, vocab_size)
+    #         with tf.name_scope("softmax"):
+    #             cross_entropy = tf.nn.softmax_cross_entropy_with_logits(
+    #                 labels=tf.one_hot(decoder_targets, depth=vocab_size, dtype=tf.float32),
+    #                 logits=decoder_logits,
+    #             )
+    # def _predict_layer(self):
+    #     with tf.device('/cpu:0'):
+    #         with tf.name_scope("predict"):
+    #             decoder_prediction = tf.argmax(decoder_logits, 2)
+    #
+    # def _loss_fun(self):
+    #     with tf.name_scope("loss"):
+    #         loss = tf.reduce_mean(cross_entropy)
+    #
+    # def _train_op(self):
+    #     with tf.name_scope("trian_op"):
+    #         train_op = tf.train.AdamOptimizer().minimize(loss)
 
     @staticmethod
     def predict_fun(input_text, vd, rvd, con_tf_s):
@@ -80,7 +80,7 @@ class Seq2SeqModel(object):
         :param input_text 输出文本
         :param vd: 词表
         :param rvd: 反转词表
-        :param con_tf_s 连接tensorflow serving object
+        :param con_tf_s 连接 tf_serving object
         :return: str
         """
         data = {
