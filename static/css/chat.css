@@ -4251,13 +4251,8 @@ body[lang='tw'] #humanBtn::after {
 	content:'转人工' !important
 }
 
-
-
-
-
-
 .headDefault{
     background-color:transparent !important;
     border-radius:5px;
-    background-image: url(../Images/head.png);
+    background-image: url(../img/head.jpeg);
 }

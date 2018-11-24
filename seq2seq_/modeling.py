@@ -81,7 +81,7 @@ class Seq2SeqModel(object):
         :param vd: 词表
         :param rvd: 反转词表
         :param con_tf_s 连接tensorflow serving object
-        :return:
+        :return: str
         """
         data = {
             "instances": [

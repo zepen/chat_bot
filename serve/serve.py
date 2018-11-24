@@ -7,6 +7,7 @@ import json
 from flask.app import request, Response
 from flask.blueprints import Blueprint
 from flask.templating import render_template
+from seq2seq_.modeling import Seq2SeqModel
 from utils.connect import ConnectionTFServing
 from utils.loggings import log
 from utils.load_files import LoadDictionary
@@ -14,6 +15,7 @@ from utils.load_files import LoadDictionary
 index = Blueprint('index', __name__)
 api = Blueprint('api', __name__)
 
+seq2seq = Seq2SeqModel()
 con_tf_s = ConnectionTFServing()
 load_files = LoadDictionary()
 vd = load_files.vocab_dict
@@ -32,22 +34,15 @@ def main():
         return Response(json.dumps({"WARN": "The request method is wrong!"}))
 
 
-@api.route('/', methods=['POST', 'GET'])
+@api.route('/api', methods=['POST'])
 def response_info():
     """  对话回复
 
     :return:
     """
     try:
-        x = [vd[s] for s in list(request.args["message"])]
-        x_data = {"instances": [
-            {
-                "encoder_inputs": x,
-                "decoder_inputs": [0] * len(x)
-            },
-        ]}
-        con_tf_s.calculate_predict_result(x=x_data)
-        return "".join([rvd[x]
-                        for x in con_tf_s.predict_result["predictions"][0]])
+        input_text = json.loads(request.data)["message"]
+        return Seq2SeqModel.predict_fun(input_text, vd, rvd, con_tf_s)
     except Exception as e:
         log.error("[response_info] " + str(e))
+        return "ERROR"

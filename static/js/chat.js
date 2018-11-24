@@ -8,10 +8,6 @@ $(document).keydown(function(event){
 });
 
 
-
-
-
-
 /////////////////////////////////////////////前台信息处理/////////////////////////////////////////////////////////
 // 发送信息
 function SendMsg()
@@ -25,8 +21,7 @@ function SendMsg()
     {
         AddMsg('default', SendMsgDispose(text.value));
         var retMsg = AjaxSendMsg(text.value);
-        AddMsg('小龙', retMsg);
-
+        AddMsg('NLAI', retMsg);
         text.value="";
     }
 
@@ -56,11 +51,10 @@ function CreadMsg(user, content)
     }
     else
     {
-        str = "<div class=\"msg robot\"><div class=\"msg-left\" worker=\"" + user + "\"><div class=\"msg-host photo\" style=\"background-image: url(../Images/head.png)\"></div><div class=\"msg-ball\" title=\"今天 17:52:06\">" + content + "</div></div></div>";
+        str = "<div class=\"msg robot\"><div class=\"msg-left\" worker=\"" + user + "\"><div class=\"msg-host photo\" style=\"background-image: url(../img/head.jpeg)\"></div><div class=\"msg-ball\" title=\"今天 17:52:06\">" + content + "</div></div></div>";
     }
     return str;
 }
-
 
 
 /////////////////////////////////////////////////////////////////////// 后台信息处理 /////////////////////////////////////////////////////////////////////////////////
@@ -72,15 +66,13 @@ function AjaxSendMsg(_content)
     $.ajax({
         type: "POST",
         async:false,
-        url: "/Home/ChatMethod/",
+        url: "/api/",
         data: {
             content: _content
         },
-        error: function (request) {
-            retStr = "你好";
-        },
-        success: function (data) {
-            retStr = data.info;
+        success: function (request) {
+            console.log(request);
+            retStr = request.info;
         }
     });
     return retStr;
