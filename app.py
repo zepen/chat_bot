@@ -2,7 +2,6 @@
 """
 启动服务
 """
-
 from flask import Flask
 from serve.serve import index, api
 

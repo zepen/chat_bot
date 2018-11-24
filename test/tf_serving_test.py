@@ -4,20 +4,17 @@
 """
 import os
 from utils.connect import ConnectionTFServing
+from utils.load_files import LoadDictionary
+from seq2seq_.modeling import Seq2SeqModel
 
 os.chdir("..")
 con_tf_s = ConnectionTFServing()
+load_dict = LoadDictionary()
+vd = load_dict.vocab_dict
+rvd = load_dict.r_vocab_dict
+
 print("URL {}".format(con_tf_s.url))
 
-data = {
-        "instances": [
-           {
-               "encoder_inputs": [0],
-               "decoder_inputs": [1]
-           },
-        ]
-       }
 
 if __name__ == '__main__':
-    con_tf_s.calculate_predict_result(data)
-    print(con_tf_s.predict_result)
+    print(Seq2SeqModel.predict_fun("傻逼", vd, rvd, con_tf_s))
