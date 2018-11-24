@@ -24,15 +24,17 @@ function SendMsg()
     else
     {
         AddMsg('default', SendMsgDispose(text.value));
-        var retMsg = AjaxSendMsg(text.value)
+        var retMsg = AjaxSendMsg(text.value);
         AddMsg('小龙', retMsg);
-        text.value = "";
+
+        text.value="";
     }
+
 }
 // 发送的信息处理
 function SendMsgDispose(detail)
 {
-    detail = detail.replace("\n", "<br>").replace(" ", "&nbsp;")
+    detail = detail.replace("\n", "<br>").replace(" ", "&nbsp;");
     return detail;
 }
 

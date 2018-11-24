@@ -1,6 +1,6 @@
-﻿@{
-    Layout = null;
-}
+﻿{#@{#}
+{#    Layout = null;#}
+{#}#}
 <html lang="zh">
 <head>
     <meta charset="utf-8">
@@ -28,7 +28,7 @@
     <script src="static/js/chat.js"></script>
 </head>
 <body lang="zh">
-    <img style="width:100%;height:100%" src="~/Images/chatBack.jpg">
+{#    <img style="width:100%;height:100%" src="~/Images/chatBack.jpg">#}
     <div class="abs cover contaniner">
         <div class="abs cover pnl">
             <div class="top pnl-head"></div>
@@ -41,14 +41,14 @@
                         </div>
                         <div class="pnl-list" id="msgs">
                             <div class="msg robot">
-                                <div class="msg-left" worker="小龙">
-                                    <div class="msg-host photo" style="background-image: url(../Images/head.png)"></div>
-                                    <div class="msg-ball" title="今天 17:52:06">你好，我是机器人小龙                <br><br>您是想要了解哪些方面呢？</div>
+                                <div class="msg-left" worker="小牛">
+                                    <div class="msg-host photo" style="background-image: url(static/img/head.jpeg)"></div>
+                                    <div class="msg-ball" title="今天 17:52:06">你好，我是机器人小牛                <br><br>您是想要了解哪些方面呢？</div>
                                 </div>
                             </div>
                             <div class="msg guest">
                                 <div class="msg-right">
-                                    <div class="msg-host headDefault"></div>
+                                    <div class="msg-host headDefault" style="background-image: url(static/img/head.jpeg)"></div>
                                     <div class="msg-ball" title="今天 17:52:06">你好</div>
                                 </div>
                             </div>
@@ -60,10 +60,11 @@
                     <div class="abs bottom pnl-text">
                         <div class="abs top pnl-warn" id="pnlWarn">
                             <div class="fl btns rel pnl-warn-free">
-                                <img src="../Images/icon/Smile.png" class="kh warn-btn" title="表情" id="emojiBtn" />
-                                <img src="../Images/icon/pic.png" class="kh warn-btn" title="截屏" id="emojiBtn" />
-                                <img src="../Images/icon/camera.png" class="kh warn-btn" title="图片" id="emojiBtn" />
-                                <img src="../Images/icon/edit.png" class="kh warn-btn" title="保存" id="emojiBtn" />
+{#                                <img src="../Images/icon/Smile.png" class="kh warn-btn" title="表情" id="emojiBtn" />#}
+{#                                <img src="../Images/icon/pic.png" class="kh warn-btn" title="截屏" id="emojiBtn" />#}
+{#                                <img src="../Images/icon/camera.png" class="kh warn-btn" title="图片" id="emojiBtn" />#}
+{#                                <img src="../Images/icon/edit.png" class="kh warn-btn" title="保存" id="emojiBtn" />#}
+
                             </div>
                         </div>
                         <div class="abs cover pnl-input">
@@ -81,17 +82,21 @@
                     <div class="pnl-right-content">
                         <div class="pnl-tabs">
                             <div class="tab-btn active" id="hot-tab">常见问题</div>
-                            @*<div class="tab-btn" id="rel-tab">相关问题</div>*@
+                            <div class="tab-btn" id="rel-tab">相关问题</div>
                         </div>
                         <div class="pnl-hot">
                             <ul class="rel-list unselect" id="hots">
-                                @{
-                                    List<string> list = ViewData["FAQ"] as List<string>;
-                                    for(int i = 0;i < list.Count;i++)
-                                    {
-                                        <li class="rel-item">@list[i]</li>
-                                    }
-                                }
+                                <li>1.常见问题</li>
+                                <li>2.常见问题</li>
+                                <li>3.常见问题</li>
+                                <li>4.常见问题</li>
+{#                                @{#}
+{#                                    List<string> list = ViewData["FAQ"] as List<string>;#}
+{#                                    for(int i = 0;i < list.Count;i++)#}
+{#                                    {#}
+{#                                        <li class="rel-item">@list[i]</li>#}
+{#                                    }#}
+{#                                }#}
                             </ul>
                         </div>
                         <div class="pnl-rel" style="display: none;">
