@@ -2084,8 +2084,8 @@ body {
 	cursor:pointer;
 	font-size:1.5em;
 	vertical-align:middle;
-    width: 18px; 
-    height: 18px; 
+    width: 18px;
+    height: 18px;
 }
 .sess-status {
 	font-size:.9em;
@@ -4249,10 +4249,4 @@ body[lang='en'] #humanBtn::after {
 }
 body[lang='tw'] #humanBtn::after {
 	content:'转人工' !important
-}
-
-.headDefault{
-    background-color:transparent !important;
-    border-radius:5px;
-    background-image: url(/static/img/robot.jpeg);
 }
