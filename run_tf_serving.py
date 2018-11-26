@@ -5,7 +5,7 @@
 import os
 
 DOCKER_BUILD = "docker build -t tensorflow/serving ."
-DOCKER_RUN = "docker run -t --rm -p 8501:8501 "
+DOCKER_RUN = "docker run -t --rm -p 8501:8501 --privileged=true"
 DOCKER_FILE_PATH = "docker/"
 PB_MODEL_PATH = "/model/chat_bot_pb"
 
