@@ -36,11 +36,17 @@ class ConnectionTFServing(Connection):
         self._port = self._config.get("tensorflow_serving", "port")
         self._path = self._config.get("tensorflow_serving", "path")
         self._url = "http://" + self._ip + ":" + self._port + self._path
+        if self._check_tf_serving() is False:
+            print("[WARN] The tf_serving is not running!")
         self._predict_result = {}
         self._object_str = "This is connection tf_serving object!"
 
     def __str__(self):
         return self._object_str
+
+    def _check_tf_serving(self):
+        return True
+        # return True if req.post(url=self.url).text else False
 
     def calculate_predict_result(self, x):
         """

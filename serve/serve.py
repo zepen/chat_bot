@@ -42,7 +42,7 @@ def response_info():
     """
     try:
         if request.data:
-            input_text = json.loads(request.data)["content"]
+            input_text = json.loads(request.data.decode("utf-8"))["content"]
             return Seq2SeqModel.predict_fun(input_text, vd, rvd, con_tf_s)
         else:
             return "What?"
