@@ -32,11 +32,12 @@
             <div class="top pnl-head"></div>
             <div class="abs cover pnl-body" id="pnlBody">
                 <div class="abs cover pnl-left">
-                    <div class="abs cover pnl-msgs scroll" id="show">
-                        <div class="msg min time" id="histStart">加载历史消息</div>
-                        <div class="pnl-list" id="hists">
-                            <!-- 历史消息 -->
-                        </div>
+{#                    <div class="abs cover pnl-msgs scroll" id="show">#}
+{#                        <div class="msg min time" id="histStart">加载历史消息</div>#}
+{#                        <div class="pnl-list" id="hists">#}
+{#                            <!-- 历史消息 -->#}
+{#                        </div>#}
+                    <div style="overflow: auto;height: 100%;" id="msgs_box">
                         <div class="pnl-list" id="msgs">
                             <div class="msg robot">
                                 <div class="msg-left" worker="NLAI">
@@ -51,6 +52,7 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
                         <div class="pnl-list hide" id="unreadLine">
                             <div class="msg min time unread">未读消息</div>
                         </div>

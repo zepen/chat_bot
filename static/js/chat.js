@@ -44,6 +44,8 @@ function AddMsg(user,content)
     let str = CreateMsg(user, content);
     let msgs = document.getElementById("msgs");
     msgs.innerHTML = msgs.innerHTML + str;
+    let msgs_box = document.getElementById("msgs_box");
+    msgs_box.scrollTop = msgs.scrollHeight;
 }
 
 /**
