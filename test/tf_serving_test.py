@@ -5,7 +5,7 @@
 import os
 from utils.connect import ConnectionTFServing
 from utils.load_files import LoadDictionary
-from seq2seq_.modeling import Seq2SeqModel
+from algorithm.seq2seq_.modeling import Seq2SeqModel
 
 os.chdir("..")
 con_tf_s = ConnectionTFServing()
