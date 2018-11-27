@@ -4,9 +4,15 @@
 """
 import numpy as np
 import tensorflow as tf
+from algorithm.seq2seq_.processing import RuleCorrection
 
 
-class Seq2SeqModel(object):
+class ModelConfig(object):
+    max_decode_len = 30
+    rule_correction = RuleCorrection()
+
+
+class Seq2SeqModel(ModelConfig):
 
     def __init__(self):
         pass
@@ -95,14 +101,18 @@ class Seq2SeqModel(object):
         data["instances"][0]["encoder_inputs"].extend(x)
         data["instances"][0]["decoder_inputs"].extend([vd["_GO_"]])
         res = []
+        decode_len = 0
         while 1:
             con_tf_s.calculate_predict_result(data)
             predict_res = con_tf_s.predict_result["predictions"][0][-1]
-            if rvd[predict_res] == "_EOS_" or rvd[predict_res] == "。":
+            if rvd[predict_res] == "_EOS_":
+                if decode_len == ModelConfig.max_decode_len:
+                    return "I am NLAI"
                 break
             res.append(predict_res)
+            decode_len += 1
             data["instances"][0]["decoder_inputs"].append(predict_res)
-        return "".join([rvd[y] for y in res])
+        return ModelConfig.rule_correction("".join([rvd[y] for y in res]))
 
     def build_model(self):
         pass
