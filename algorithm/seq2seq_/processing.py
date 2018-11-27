@@ -54,13 +54,13 @@ from utils.loggings import log
 class RuleCorrection(object):
 
     def __init__(self):
-        self._rule_path = "../config/rule.json"
+        self._rule_path = "./config/rule.json"
         self._rule_dict = {}
         self._load_rule()
 
     def _load_rule(self):
-        with open(self._rule_path, "r") as f:
-            self._rule_dict = json.loads(f)
+        with open(self._rule_path, "r", encoding="utf-8") as f:
+            self._rule_dict = json.load(f)
         log.info("[INFO] The rule file is load!")
 
     def __call__(self, output_text):
