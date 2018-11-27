@@ -54,7 +54,7 @@ from utils.loggings import log
 class RuleCorrection(object):
 
     def __init__(self):
-        self._rule_path = ""
+        self._rule_path = "../config/rule.json"
         self._rule_dict = {}
         self._load_rule()
 
