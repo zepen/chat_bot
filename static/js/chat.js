@@ -4,6 +4,7 @@
  * **/
 $(document).keydown(function(event){
     if(event.keyCode === 13){
+        event.preventDefault();
         SendMsg();
     }
 });
@@ -81,7 +82,7 @@ function AjaxSendMsg(_content)
         contentType: "application/json;charset=utf-8",
         data: '{"content": "' + _content + '"}',
         success: function (data) {
-            console.log(data);
+            // console.log(data);
             retStr = data;
         }
     });
