@@ -64,12 +64,12 @@ class RuleCorrection(object):
         log.info("[INFO] The rule file is load!")
 
     def __call__(self, output_text):
-        self.rule_correction_fun(output_text)
+        return self.rule_correction_fun(output_text)
 
     def rule_correction_fun(self, output_text: str) -> str:
         """  对模型预测文本结果进行校正
         :param output_text: 预测文本
         :return: str
         """
-        if output_text in set(self._rule_dict.keys()):
-            return self._rule_dict[output_text]
+        return self._rule_dict[output_text] \
+            if self._rule_dict.get(output_text) else output_text

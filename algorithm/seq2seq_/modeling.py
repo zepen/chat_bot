@@ -2,17 +2,10 @@
 """
 定义seq2seq模型
 """
-import numpy as np
 import tensorflow as tf
-from algorithm.seq2seq_.processing import RuleCorrection
 
 
-class ModelConfig(object):
-    max_decode_len = 30
-    rule_correction = RuleCorrection()
-
-
-class Seq2SeqModel(ModelConfig):
+class Seq2SeqModel(object):
 
     def __init__(self):
         pass
@@ -81,12 +74,13 @@ class Seq2SeqModel(ModelConfig):
     #         train_op = tf.train.AdamOptimizer().minimize(loss)
 
     @staticmethod
-    def predict_fun(input_text, vd, rvd, con_tf_s):
+    def predict_fun(input_text, vd, rvd, con_tf_s, m_config):
         """
         :param input_text 输出文本
         :param vd: 词表
         :param rvd: 反转词表
         :param con_tf_s 连接 tf_serving object
+        :param m_config 配置对象
         :return: str
         """
         data = {
@@ -106,13 +100,14 @@ class Seq2SeqModel(ModelConfig):
             con_tf_s.calculate_predict_result(data)
             predict_res = con_tf_s.predict_result["predictions"][0][-1]
             if rvd[predict_res] == "_EOS_":
-                if decode_len == ModelConfig.max_decode_len:
-                    return "I am NLAI"
                 break
+            if decode_len > m_config.max_decode_len:
+                return m_config.replace_sentence
             res.append(predict_res)
             decode_len += 1
             data["instances"][0]["decoder_inputs"].append(predict_res)
-        return ModelConfig.rule_correction("".join([rvd[y] for y in res]))
+        output_text = m_config.rule_correction("".join([rvd[y] for y in res]))
+        return m_config.replace_sentence if output_text is None else output_text
 
     def build_model(self):
         pass

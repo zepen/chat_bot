@@ -12,6 +12,7 @@ from algorithm.classifier.modeling import ClassifierModel
 from utils.connect import ConnectionTFServing
 from utils.loggings import log
 from utils.load_files import LoadDictionary
+from utils.model_config import ModelConfig
 
 index = Blueprint('index', __name__)
 api = Blueprint('api', __name__)
@@ -19,6 +20,7 @@ api = Blueprint('api', __name__)
 seq2seq = Seq2SeqModel()
 classifier = ClassifierModel()
 con_tf_s = ConnectionTFServing()
+m_config = ModelConfig()
 load_files = LoadDictionary()
 vd = load_files.vocab_dict
 rvd = load_files.r_vocab_dict
@@ -50,7 +52,7 @@ def response_info():
             # classifier_res = ClassifierModel.predict_fun()
             # if classifier_res:
             #     pass
-            return Seq2SeqModel.predict_fun(input_text, vd, rvd, con_tf_s)
+            return Seq2SeqModel.predict_fun(input_text, vd, rvd, con_tf_s, m_config)
         else:
             return "What?"
     except Exception as e:
