@@ -7,8 +7,9 @@ import json
 from flask.app import request, Response
 from flask.blueprints import Blueprint
 from flask.templating import render_template
-from algorithm.seq2seq_.modeling import Seq2SeqModel
-from algorithm.classifier.modeling import ClassifierModel
+from algorithm.seq2seq import Seq2SeqModel
+from algorithm.classifier import ClassifierModel
+from algorithm.processing import RuleCorrection
 from utils.connect import ConnectionTFServing
 from utils.loggings import log
 from utils.load_files import LoadDictionary

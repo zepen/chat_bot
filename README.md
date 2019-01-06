@@ -1,10 +1,16 @@
-## 基于小黄鸡语料的对话机器人
-### 一. 执行说明
-启动tf_serving服务
+## 智能对话机器人
+#### 环境说明
+
+#### 执行说明
+ 启动tf_serving服务
 ```bash
 python run_tf_serving.py
 ```
  启动对话机器人
 ```bash
-pytrhon run_robot.py
+python run_robot.py
 ```
+ 训练模型
+ ```
+python run_train.py
+ ```
