@@ -7,7 +7,7 @@ import tensorflow as tf
 
 class Seq2SeqModel(object):
 
-    def __init__(self, hp):
+    def __init__(self, hp, **kwargs):
         """ seq2seq 模型用于生成对话
 
         :param hp: 模型超参数
@@ -27,7 +27,7 @@ class Seq2SeqModel(object):
         with tf.device('/cpu:0'):
             with tf.name_scope("embedding"):
                 embeddings = tf.Variable(
-                    tf.random_uniform([hp.vocab_size, hp.input_embedding_size], -1.0, 1.0), dtype=tf.float32)
+                    tf.random_uniform([kwargs["vocab_size"], hp.input_embedding_size], -1.0, 1.0), dtype=tf.float32)
                 self._encoder_inputs_embedded = tf.nn.embedding_lookup(embeddings, self._encoder_inputs)
                 self._decoder_inputs_embedded = tf.nn.embedding_lookup(embeddings, self._decoder_inputs)
 
@@ -54,7 +54,7 @@ class Seq2SeqModel(object):
             with tf.name_scope("full_connect"):
                 decoder_logits = tf.contrib.layers.linear(self._decoder_outputs, hp.vocab_size)
 
-        if hp.mode == "train":
+        if kwargs["mode"] == "train":
             with tf.name_scope("softmax"):
                 self._cross_entropy = tf.nn.softmax_cross_entropy_with_logits(
                     labels=tf.one_hot(self._decoder_targets, depth=hp.vocab_size, dtype=tf.float32),
@@ -65,7 +65,7 @@ class Seq2SeqModel(object):
             with tf.name_scope("trian_op"):
                 self._train_op = tf.train.AdamOptimizer().minimize(self._loss)
 
-        if hp.mode == "predict":
+        if kwargs["mode"] == "predict":
             with tf.device('/cpu:0'):
                 with tf.name_scope("predict"):
                     self._decoder_prediction = tf.argmax(decoder_logits, 2)
@@ -91,7 +91,7 @@ class Seq2SeqModel(object):
         return self._train_op
 
     @staticmethod
-    def predict_fun(input_text, vd, rvd, con_tf_s, m_config):
+    def predict_fun(input_text, vd, rvd, con_tf_s, m_config, rule_correction):
         """  解码预测
 
         :param input_text 输出文本
@@ -99,6 +99,7 @@ class Seq2SeqModel(object):
         :param rvd: 反转词表
         :param con_tf_s 连接 tf_serving object
         :param m_config 配置对象
+        :param rule_correction 规则修正对象
         :return: str
         """
         data = {
@@ -124,7 +125,7 @@ class Seq2SeqModel(object):
             res.append(predict_res)
             decode_len += 1
             data["instances"][0]["decoder_inputs"].append(predict_res)
-        output_text = m_config.rule_correction("".join([rvd[y] for y in res]))
+        output_text = rule_correction("".join([rvd[y] for y in res]))
         return m_config.replace_sentence if output_text is None else output_text
 
     @staticmethod

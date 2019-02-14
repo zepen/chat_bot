@@ -6,19 +6,21 @@ import os
 from utils.connect import ConnectionTFServing
 from utils.load_files import LoadDictionary
 from algorithm.seq2seq import Seq2SeqModel
+from algorithm.processing import RuleCorrection
 from utils.model_config import ModelConfig
 
 os.chdir("..")
 
-
 con_tf_s = ConnectionTFServing()
 load_dict = LoadDictionary()
 m_config = ModelConfig()
+rule_c = RuleCorrection()
 vd = load_dict.vocab_dict
 rvd = load_dict.r_vocab_dict
-
 print("URL {}".format(con_tf_s.url))
 
 
 if __name__ == '__main__':
-    print(Seq2SeqModel.predict_fun("傻逼", vd, rvd, con_tf_s, m_config))
+    print(Seq2SeqModel.predict_fun(
+        "傻逼", vd, rvd, con_tf_s, m_config, rule_c)
+    )

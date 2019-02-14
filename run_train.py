@@ -4,6 +4,7 @@
 """
 import tensorflow as tf
 from utils.model_config import ModelConfig
+from algorithm.seq2seq import Seq2SeqModel
 
 tf.app.flags.DEFINE_string('device', 'cpu', "设定训练设备")
 tf.app.flags.DEFINE_integer('train_steps_num', 1000, "设置迭代次数")
@@ -20,11 +21,12 @@ config = tf.ConfigProto(
     log_device_placement=True,
     gpu_options=gpu_options
 )
+seq2seq_model = Seq2SeqModel(mc)
 
 
 def main(_):
     with tf.Session(config=config) as sess:
-        pass
+        sess.run(seq2seq_model.train_op)
 
 
 if __name__ == '__main__':

@@ -18,13 +18,15 @@ from utils.model_config import ModelConfig
 index = Blueprint('index', __name__)
 api = Blueprint('api', __name__)
 
-seq2seq = Seq2SeqModel()
-classifier = ClassifierModel()
-con_tf_s = ConnectionTFServing()
-m_config = ModelConfig()
 load_files = LoadDictionary()
 vd = load_files.vocab_dict
 rvd = load_files.r_vocab_dict
+vocab_size = len(vd)
+m_config = ModelConfig()
+rule_c = RuleCorrection()
+# seq2seq = Seq2SeqModel(hp=m_config, vocab_size=vocab_size, mode="predict")
+# classifier = ClassifierModel()
+con_tf_s = ConnectionTFServing()
 
 
 @index.route('/', methods=["GET"])
@@ -53,7 +55,7 @@ def response_info():
             # classifier_res = ClassifierModel.predict_fun()
             # if classifier_res:
             #     pass
-            return Seq2SeqModel.predict_fun(input_text, vd, rvd, con_tf_s, m_config)
+            return Seq2SeqModel.predict_fun(input_text, vd, rvd, con_tf_s, m_config, rule_c)
         else:
             return "What?"
     except Exception as e:

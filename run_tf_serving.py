@@ -24,7 +24,6 @@ def docker_run():
     """
     global DOCKER_RUN
     os.chdir("..")
-
     path = os.getcwd().replace("\\", "/")
     v = '-v  "' + path + PB_MODEL_PATH + ':/models/chat_bot" '
     e = "-e MODEL_NAME=chat_bot tensorflow/serving "
