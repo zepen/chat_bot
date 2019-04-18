@@ -1,2 +1,0 @@
-model_checkpoint_path: "chat_bot.ckpt"
-all_model_checkpoint_paths: "chat_bot.ckpt"

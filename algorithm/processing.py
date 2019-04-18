@@ -1,42 +1,41 @@
 # -*- coding:utf-8 -*-
 """
-数据预处理
+Processing Data
 """
 import re
 import json
 import numpy as np
 from utils.loggings import log
+from pickle import load
 
 
 class ProcessingCorps(object):
 
-    def __init__(self, **kwargs):
-        """
-
-        :param kwargs:
-        """
-        self._vocab_dict = kwargs["vocab_dict"]
+    def __init__(self):
+        with open("dictionary/vocab_dict.pkl", "rb") as f:
+            self._vocab_dict = load(f)
         with open("corpus/chat_corpus.txt", "r", encoding="utf-8") as f:
             pre_txt = [i.replace("\n", "") for i in f.readlines()]
         match_re = re.compile("M")
         corpus = [s.split("/") for s in [re.sub("M ", "", i) for i in pre_txt if match_re.match(i)]]
         self._x_data = [(corpus[2 * n], corpus[2 * n + 1]) for n in range(int(len(corpus) / 2))]
 
-    def train_sequences(self, batch_size):
-        """
+    def _get_sentences(self, batch_size):
+        """ Get batch sentence from corpus
 
         :param batch_size:
         :return:
         """
-        while True:
-            yield [self._x_data[np.random.randint(0, len(self._x_data) - 1)] for _ in range(batch_size)]
+        return [self._x_data[np.random.randint(0, len(self._x_data) - 1)] for _ in range(batch_size)]
 
-    def make_batch(self, sen, max_sequence_length=None):
-        """
+    def _padding_zero(self, sen, max_sequence_length=None):
+        """ Get each batch samples
 
-        :param sen:
+        :param sen: inputs sentence
         :param max_sequence_length:
-        :return:
+        :return: encoder_inputs, decoder_inputs, decoder_targets,
+                  Type: np.array
+                  Shape: (batch_size, time_steps, embed_size)
         """
         max_sequence_x_length, max_sequence_y_length = None, None
 
@@ -70,11 +69,15 @@ class ProcessingCorps(object):
             for j, element in enumerate(seq):
                 target_y_batch_major[i, j] = element
 
-        x = inputs_x_batch_major.swapaxes(0, 1)
-        y = inputs_y_batch_major.swapaxes(0, 1)
-        y_ = target_y_batch_major.swapaxes(0, 1)
+        x = inputs_x_batch_major
+        y = inputs_y_batch_major
+        y_ = target_y_batch_major
 
         return x, y, y_
+
+    def get_batch(self, batch_size, max_sequence_length=None):
+        inputs_sentence = self._get_sentences(batch_size)
+        return self._padding_zero(inputs_sentence, max_sequence_length=max_sequence_length)
 
 
 class RuleCorrection(object):

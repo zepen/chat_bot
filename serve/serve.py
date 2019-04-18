@@ -8,12 +8,11 @@ from flask.app import request, Response
 from flask.blueprints import Blueprint
 from flask.templating import render_template
 from algorithm.seq2seq import Seq2SeqModel
-from algorithm.classifier import ClassifierModel
 from algorithm.processing import RuleCorrection
 from utils.connect import ConnectionTFServing
 from utils.loggings import log
 from utils.load_files import LoadDictionary
-from utils.model_config import ModelConfig
+from config import ModelConfig
 
 index = Blueprint('index', __name__)
 api = Blueprint('api', __name__)
@@ -24,8 +23,6 @@ rvd = load_files.r_vocab_dict
 vocab_size = len(vd)
 m_config = ModelConfig()
 rule_c = RuleCorrection()
-# seq2seq = Seq2SeqModel(hp=m_config, vocab_size=vocab_size, mode="predict")
-# classifier = ClassifierModel()
 con_tf_s = ConnectionTFServing()
 
 
@@ -52,10 +49,7 @@ def response_info():
             request_text = request.data.decode("utf-8")
             request_text = request_text.replace("\n", "")
             input_text = json.loads(request_text)["content"]
-            # classifier_res = ClassifierModel.predict_fun()
-            # if classifier_res:
-            #     pass
-            return Seq2SeqModel.predict_fun(input_text, vd, rvd, con_tf_s, m_config, rule_c)
+            return Seq2SeqModel.predict_func(input_text, vd, rvd, con_tf_s, m_config, rule_c)
         else:
             return "What?"
     except Exception as e:

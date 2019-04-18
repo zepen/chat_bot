@@ -3,11 +3,17 @@
 启动tf_serving
 """
 import os
+import argparse
+
+parser = argparse.ArgumentParser(description='This script argument')
+parser.add_argument('--char_dict', help='')
+parser.add_argument('--model_version', default="001")
+args = parser.parse_args()
 
 DOCKER_BUILD = "docker build -t tensorflow/serving ."
-DOCKER_RUN = "docker run -t --rm -p 8501:8501 --privileged=true "
+DOCKER_RUN = "docker run -t --rm " +  "-p 8501:8501 --privileged=true "
 DOCKER_FILE_PATH = "docker/"
-PB_MODEL_PATH = "/model/chat_bot_pb"
+PB_MODEL_PATH = "/model/" + args.model_version
 
 
 def docker_build():
