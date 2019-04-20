@@ -23,7 +23,7 @@ python run_tf_serving.py
    ```
   * 正式启动
   ```bash
-  gunicorn -w 4 -b 0.0.0.0:5000 run_robot:app
+  gunicorn -w 4 -b 0.0.0.0:5000 run_robot:app  # 适用于linux系统下启动，win下会报错ModuleNotFoundError: No module named 'pwd'
   ```
 
  #### 注意说明
