@@ -10,13 +10,14 @@ from algorithm.seq2seq import Seq2SeqModel
 
 tf.app.flags.DEFINE_string('device', 'cpu', "设定训练设备")
 tf.app.flags.DEFINE_integer('train_steps_num', 1000, "设置迭代次数")
-tf.app.flags.DEFINE_boolean('bool_name', False, "descript3")
+tf.app.flags.DEFINE_integer('batch_size', 32, "训练批次大小")
 tf.app.flags.DEFINE_string("model_version", "001", "模型版本")
 FLAGS = tf.app.flags.FLAGS
 
 mc = ModelConfig()
 mc.device = FLAGS.device
 mc.train_steps_num = FLAGS.train_steps_num
+mc.batch_size = FLAGS.batch_size
 mc.model_version = FLAGS.model_version
 
 
@@ -43,7 +44,7 @@ def main(_):
         sess.run(tf.global_variables_initializer())
         tf.logging.info("Please open tensorboard to Supervisor train processing...")
         for step in range(FLAGS.train_steps_num):
-            encoder_inputs, decoder_inputs, decoder_target = processing_corpus.get_batch(1)
+            encoder_inputs, decoder_inputs, decoder_target = processing_corpus.get_batch(mc.batch_size)
             _, summary, loss = sess.run(
                 [seq2seq_model.train_op, merge_all, seq2seq_model.loss],
                 feed_dict={
