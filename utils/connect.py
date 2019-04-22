@@ -32,7 +32,6 @@ class ConnectionTFServing(Connection):
 
     def __init__(self):
         super(ConnectionTFServing, self).__init__()
-        print(self._config_path)
         self._ip = self._config.get("tensorflow_serving", "ip")
         self._port = self._config.get("tensorflow_serving", "port")
         self._path = self._config.get("tensorflow_serving", "path")

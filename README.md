@@ -2,6 +2,7 @@
 #### 环境说明
 * python-3.5
 * tensorflow-1.10.1
+* itchat-1.3.10
 
 #### 执行说明
 * step-1 训练模型，语料在corpus文件下，语料可替换，格式要与示例语料相同
@@ -26,7 +27,15 @@ python run_tf_serving.py
   gunicorn -w 4 -b 0.0.0.0:5000 run_robot:app  # 适用于linux系统下启动，win下会报错ModuleNotFoundError: No module named 'pwd'
   ```
 
+#### 部署机器人到微信
+
+```bash
+python run_wei_chat.py
+```
+
  #### 注意说明
-  若在启动 run_tf_serving.py 时候，
-  出现<font color="red">Error starting userland proxy: mkdir /port/tcp:0.0.0.0:8501:tcp:172.17.0.2:8501: input/output error</font>
-  重启docker问题可解决
+  * 若在启动 run_tf_serving.py 时候，出现<font color="red">Error starting userland proxy: mkdir /port/tcp:0.0.0.0:8501:tcp:172.17.0.2:8501: input/output error</font>, 重启docker问题可解决.
+  
+  * 启动界面访问url使用 https开头, 则会出现 code 400, message Bad request version， 改http即可.
+  
+  * 在win系统下，二维码生成到项目目录下; 在linux系统下，二维码打印在控制台，扫码即可登录.

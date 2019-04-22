@@ -1,11 +1,11 @@
 # -*- coding:utf-8 -*-
 """
-定义分类器模型
+定义实体抽取模型
 """
 import tensorflow as tf
 
 
-class ClassifierModel(object):
+class NerModel(object):
 
     def __init__(self):
         pass
@@ -14,7 +14,7 @@ class ClassifierModel(object):
         pass
 
 
-class TextCnn(ClassifierModel):
+class BirLstmCrf(NerModel):
 
     def __init__(self):
         super().__init__()
