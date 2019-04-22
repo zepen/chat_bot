@@ -31,7 +31,7 @@ class Seq2SeqModel(object):
                 self._max_target_sequence_length = tf.reduce_max(self._decoder_targets_length, name='max_target_len')
                 self._mask = tf.sequence_mask(
                     self._decoder_targets_length, self._max_target_sequence_length, dtype=tf.float32, name='masks')
-                self._batch_size = tf.placeholder(tf.int32, [], name='batch_size')
+                self._batch_size = tf.placeholder(shape=[None], dtype=tf.int32, name='batch_size')
 
         with tf.device('/cpu:0'):
             with tf.name_scope("embedding"):
@@ -79,7 +79,7 @@ class Seq2SeqModel(object):
                         name='attention_wrapper')
 
                 decoder_initial_state = decoder_cell.zero_state(
-                    batch_size=kwargs["batch_size"], dtype=tf.float32).clone(cell_state=self._encoder_final_state)
+                    batch_size=self._batch_size[0], dtype=tf.float32).clone(cell_state=self._encoder_final_state)
 
                 with tf.name_scope("output_layer"):
                     output_layer = tf.layers.Dense(
@@ -117,7 +117,7 @@ class Seq2SeqModel(object):
                     self._train_op = tf.train.AdamOptimizer().minimize(self._loss)
 
             with tf.name_scope("predict"):
-                start_tokens = tf.ones([self._batch_size, ], tf.int32) * self._vocab_dict['_GO_']
+                start_tokens = tf.ones([self._batch_size[0]], tf.int32) * self._vocab_dict['_GO_']
                 end_token = self._vocab_dict['_EOS_']
                 decoding_helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(
                     embedding=embeddings, start_tokens=start_tokens, end_token=end_token
@@ -207,7 +207,7 @@ class Seq2SeqModel(object):
                 {
                     "encoder_inputs": x,
                     "encoder_inputs_length": len(x),
-                    "batch_size": [int(1)],
+                    "batch_size": 1
                 },
             ]
         }

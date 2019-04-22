@@ -46,7 +46,6 @@ class ConnectionTFServing(Connection):
 
     def _check_tf_serving(self):
         return True
-        # return True if req.post(url=self.url).text else False
 
     def calculate_predict_result(self, x):
         """
