@@ -2,23 +2,20 @@
 """
 Processing Data
 """
-import re
 import json
 import numpy as np
 from utils.loggings import log
-from pickle import load
+from utils.load_files import LoadDictionary, LoadCorpus
 
 
 class ProcessingCorps(object):
 
     def __init__(self):
-        with open("dictionary/vocab_dict.pkl", "rb") as f:
-            self._vocab_dict = load(f)
-        with open("corpus/chat_corpus.txt", "r", encoding="utf-8") as f:
-            pre_txt = [i.replace("\n", "") for i in f.readlines()]
-        match_re = re.compile("M")
-        corpus = [s.split("/") for s in [re.sub("M ", "", i) for i in pre_txt if match_re.match(i)]]
-        self._x_data = [(corpus[2 * n], corpus[2 * n + 1]) for n in range(int(len(corpus) / 2))]
+        load_dictionary = LoadDictionary()
+        self._vocab_dict = load_dictionary.vocab_dict
+        self._r_vocab_dict = load_dictionary.r_vocab_dict
+        load_corpus = LoadCorpus()
+        self._x_data = load_corpus.x_data
 
     def _get_sentences(self, batch_size):
         """ Get batch sentence from corpus
@@ -44,8 +41,8 @@ class ProcessingCorps(object):
                    for sequence in [[self._vocab_dict[x] for x in s[1]] for s in sen]]
         target_y = [(sequence) + [self._vocab_dict["_EOS_"]]
                     for sequence in [[self._vocab_dict[x] for x in s[1]] for s in sen]]
-        sequence_x_lengths = [len(seq) for seq in input_x]
 
+        sequence_x_lengths = [len(seq) for seq in input_x]
         if max_sequence_x_length is None:
             max_sequence_x_length = max(sequence_x_lengths)
 
@@ -73,11 +70,19 @@ class ProcessingCorps(object):
         y = inputs_y_batch_major
         y_ = target_y_batch_major
 
-        return x, y, y_
+        return x, y, y_, sequence_x_lengths, sequence_y_lengths
 
     def get_batch(self, batch_size, max_sequence_length=None):
         inputs_sentence = self._get_sentences(batch_size)
         return self._padding_zero(inputs_sentence, max_sequence_length=max_sequence_length)
+
+    @property
+    def vocab_dict(self):
+        return self._vocab_dict
+
+    @property
+    def r_vocab_dict(self):
+        return self._r_vocab_dict
 
 
 class RuleCorrection(object):

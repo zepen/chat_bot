@@ -2,6 +2,7 @@
 """
 预加载相关文件
 """
+import re
 from pickle import load
 from utils.loggings import log
 
@@ -16,9 +17,19 @@ class LoadCorpus(LoadFiles):
 
     def __init__(self):
         super(LoadCorpus, self).__init__()
+        self._corpus_path = "./corpus/chat_corpus.txt"
+        self._load_corpus()
 
-    def building_vocab_dict(self):
-        pass
+    def _load_corpus(self):
+        with open(self._corpus_path, "r", encoding="utf-8") as f:
+            pre_txt = [i.replace("\n", "") for i in f.readlines()]
+        match_re = re.compile("M")
+        corpus = [s.split("/") for s in [re.sub("M ", "", i) for i in pre_txt if match_re.match(i)]]
+        self._x_data = [(corpus[2 * n], corpus[2 * n + 1]) for n in range(int(len(corpus) / 2))]
+
+    @property
+    def x_data(self):
+        return self._x_data
 
 
 class LoadDictionary(LoadFiles):
@@ -30,9 +41,7 @@ class LoadDictionary(LoadFiles):
         super(LoadDictionary, self).__init__()
         self._vocab_dict = {}
         self._r_vocab_dict = {}
-        self._dict_path = "./dictionary/"
-        self._vocab_dict_path = self._dict_path + "vocab_dict.pkl"
-        self._r_vocab_dict_path = self._dict_path + "r_vocab_dict.pkl"
+        self._vocab_dict_path = "./dictionary/vocab_dict.pkl"
         self._object_str = "This is load file object!"
         self._load_vocab_dict()
         self._r_load_vocab_dict()

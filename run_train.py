@@ -29,7 +29,15 @@ config = tf.ConfigProto(
 )
 
 processing_corpus = ProcessingCorps()
-seq2seq_model = Seq2SeqModel(mc, vocab_size=mc.vocab_size, mode="train")
+seq2seq_model = Seq2SeqModel(
+    mc,
+    batch_size=mc.batch_size,
+    vocab_size=mc.vocab_size,
+    mode="train",
+    vocab_dict=processing_corpus.vocab_dict,
+    r_vocab_dict=processing_corpus.r_vocab_dict,
+    show_text=False
+)
 
 
 def main(_):
@@ -44,13 +52,17 @@ def main(_):
         sess.run(tf.global_variables_initializer())
         tf.logging.info("Please open tensorboard to Supervisor train processing...")
         for step in range(FLAGS.train_steps_num):
-            encoder_inputs, decoder_inputs, decoder_target = processing_corpus.get_batch(mc.batch_size)
+            encoder_inputs, decoder_inputs, decoder_target, encoder_inputs_length, decoder_targets_length \
+                = processing_corpus.get_batch(mc.batch_size)
             _, summary, loss = sess.run(
                 [seq2seq_model.train_op, merge_all, seq2seq_model.loss],
                 feed_dict={
+                    seq2seq_model.batch_size: mc.batch_size,
                     seq2seq_model.encoder_inputs: encoder_inputs,
+                    seq2seq_model.encoder_inputs_length: encoder_inputs_length,
                     seq2seq_model.decoder_inputs: decoder_inputs,
-                    seq2seq_model.decoder_targets: decoder_target
+                    seq2seq_model.decoder_targets: decoder_target,
+                    seq2seq_model.decoder_targets_length: decoder_targets_length
                 }
             )
             writer.add_summary(summary, step)
@@ -61,7 +73,8 @@ def main(_):
             save_path="model/",
             model_version=mc.model_version,
             encoder_inputs=seq2seq_model.encoder_inputs,
-            decoder_inputs=seq2seq_model.decoder_inputs,
+            encoder_inputs_length=seq2seq_model.encoder_inputs_length,
+            batch_size=seq2seq_model.batch_size,
             predictions=seq2seq_model.decoder_prediction
         )
 

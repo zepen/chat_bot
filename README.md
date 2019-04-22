@@ -34,6 +34,9 @@ python run_wei_chat.py
 ```
 
  #### 注意说明
+ 
+  * 训练过程中，若要将模型部署到 tensorflow-serving 中，令show_text=False，因为 tensorflow-serving 框架中貌似不支持py_func函数，会导致部署模型时图加载失败
+ 
   * 若在启动 run_tf_serving.py 时候，出现<font color="red">Error starting userland proxy: mkdir /port/tcp:0.0.0.0:8501:tcp:172.17.0.2:8501: input/output error</font>, 重启docker问题可解决.
   
   * 启动界面访问url使用 https开头, 则会出现 code 400, message Bad request version， 改http即可.
