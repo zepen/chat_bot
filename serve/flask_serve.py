@@ -1,18 +1,17 @@
 # -*- coding:utf-8 -*-
 """
-REST API
+FLASK RESTFUL API
 """
 
 import json
 from flask.app import request, Response
 from flask.blueprints import Blueprint
 from flask.templating import render_template
-from algorithm.seq2seq import Seq2SeqModel
 from algorithm.processing import RuleCorrection
-from utils.connect import ConnectionTFServing
 from utils.loggings import log
 from utils.load_files import LoadDictionary
-from config import ModelConfig
+from config.config import ModelConfig
+from .tf_serving import predict_func
 
 index = Blueprint('index', __name__)
 api = Blueprint('api', __name__)
@@ -23,7 +22,6 @@ rvd = load_files.r_vocab_dict
 vocab_size = len(vd)
 m_config = ModelConfig()
 rule_c = RuleCorrection()
-con_tf_s = ConnectionTFServing()
 
 
 @index.route('/', methods=["GET"])
@@ -49,7 +47,7 @@ def response_info():
             request_text = request.data.decode("utf-8")
             request_text = request_text.replace("\n", "")
             input_text = json.loads(request_text)["content"]
-            return Seq2SeqModel.predict_func(input_text, vd, rvd, con_tf_s, m_config, rule_c)
+            return predict_func(input_text, vd, rvd, m_config, rule_c)
         else:
             return "What?"
     except Exception as e:

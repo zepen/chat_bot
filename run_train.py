@@ -4,7 +4,7 @@
 """
 import os
 import tensorflow as tf
-from config import ModelConfig
+from config.config import ModelConfig
 from algorithm.processing import ProcessingCorps
 from algorithm.seq2seq import Seq2SeqModel
 

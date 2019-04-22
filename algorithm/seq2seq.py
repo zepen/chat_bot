@@ -190,33 +190,6 @@ class Seq2SeqModel(object):
         return self._train_op
 
     @staticmethod
-    def predict_func(input_text, vd, rvd, con_tf_s, m_config, rule_correction):
-        """  解码预测
-
-        :param input_text 输出文本
-        :param vd: 词表
-        :param rvd: 反转词表
-        :param con_tf_s 连接 tf_serving object
-        :param m_config 配置对象
-        :param rule_correction 规则修正对象
-        :return: str
-        """
-        x = [vd[x] if vd.get(x) else vd["_UNK_"] for x in list(input_text)]
-        data = {
-            "instances": [
-                {
-                    "encoder_inputs": x,
-                    "encoder_inputs_length": len(x),
-                    "batch_size": 1
-                },
-            ]
-        }
-        con_tf_s.calculate_predict_result(data)
-        predict_res = con_tf_s.predict_result["predictions"][0]
-        output_text = rule_correction("".join([rvd[y] for y in predict_res if rvd[y] != "_EOS_"]))
-        return m_config.replace_sentence if output_text is None else output_text
-
-    @staticmethod
     def save_model(saver, sess, save_path, gs):
         """  保存模型
 
