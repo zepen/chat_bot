@@ -9,6 +9,7 @@ from algorithm.processing import ProcessingCorps
 from algorithm.seq2seq import Seq2SeqModel
 
 tf.app.flags.DEFINE_string('device', 'cpu', "设定训练设备")
+tf.app.flags.DEFINE_integer('device_number', 'cpu_num', "cpu数目")
 tf.app.flags.DEFINE_integer('train_steps_num', 1000, "设置迭代次数")
 tf.app.flags.DEFINE_integer('batch_size', 32, "训练批次大小")
 tf.app.flags.DEFINE_string("model_version", "001", "模型版本")
@@ -23,7 +24,7 @@ mc.model_version = FLAGS.model_version
 
 gpu_options = tf.GPUOptions(allow_growth=mc.gpu_options)
 config = tf.ConfigProto(
-    device_count={"CPU": 8},
+    device_count={"CPU": int(FLAGS.cpu_num)},
     log_device_placement=True,
     gpu_options=gpu_options
 )
