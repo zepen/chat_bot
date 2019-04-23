@@ -1,8 +1,7 @@
 ## 智能对话机器人
 #### 环境说明
-* python-3.5
-* tensorflow-1.10.1
-* itchat-1.3.10
+* python环境: python-3.5
+* 依赖包见 requirements.txt
 
 #### 执行说明
 * step-1 训练模型，语料在corpus文件下，语料可替换，格式要与示例语料相同

@@ -4,7 +4,7 @@
 """
 import os
 import tensorflow as tf
-from config import ModelConfig
+from config.config import ModelConfig
 from algorithm.processing import ProcessingCorps
 from algorithm.seq2seq import Seq2SeqModel
 
@@ -57,7 +57,7 @@ def main(_):
             _, summary, loss = sess.run(
                 [seq2seq_model.train_op, merge_all, seq2seq_model.loss],
                 feed_dict={
-                    seq2seq_model.batch_size: mc.batch_size,
+                    seq2seq_model.batch_size: [mc.batch_size] * mc.batch_size,
                     seq2seq_model.encoder_inputs: encoder_inputs,
                     seq2seq_model.encoder_inputs_length: encoder_inputs_length,
                     seq2seq_model.decoder_inputs: decoder_inputs,

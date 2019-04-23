@@ -1,19 +1,16 @@
 # -*- coding: utf-8 -*-
 """
-用于创建连接对象
+读取连接信息
 """
-import json
-import requests as req
 from configparser import ConfigParser
-from utils.loggings import log
 
 
 class Connection(object):
 
     def __init__(self):
         self._config = ConfigParser()
-        self._config_path = "config/"
-        self._config.read(self._config_path + "serve.ini")
+        self._config_path = "./config/"
+        self._config.read(self._config_path + "tf_serving.ini")
         self._object_str = "This is connection object!"
 
     def __str__(self):
@@ -35,38 +32,21 @@ class ConnectionTFServing(Connection):
         self._ip = self._config.get("tensorflow_serving", "ip")
         self._port = self._config.get("tensorflow_serving", "port")
         self._path = self._config.get("tensorflow_serving", "path")
+        self._name = self._config.get("tensorflow_serving", "name")
         self._url = "http://" + self._ip + ":" + self._port + self._path
-        if self._check_tf_serving() is False:
-            print("[WARN] The tf_serving is not running!")
-        self._predict_result = {}
         self._object_str = "This is connection tf_serving object!"
 
     def __str__(self):
         return self._object_str
-
-    def _check_tf_serving(self):
-        return True
-        # return True if req.post(url=self.url).text else False
-
-    def calculate_predict_result(self, x):
-        """
-
-        :param x: 待预测样本
-        :return: dict 预测结果
-        """
-        assert isinstance(x, dict)
-        self._predict_result.clear()
-        try:
-            r = req.post(url=self._url, data=json.dumps(x))
-            log.info("[INFO] " + str(r.status_code))
-            self._predict_result = r.json()
-        except Exception as e:
-            log.error("[ERROR] " + str(e))
 
     @property
     def url(self):
         return self._url
 
     @property
-    def predict_result(self):
-        return self._predict_result
+    def port(self):
+        return self._port
+
+    @property
+    def name(self):
+        return self._name
