@@ -36,11 +36,18 @@ class ProcessingCorps(object):
         """
         max_sequence_x_length, max_sequence_y_length = None, None
 
-        input_x = [[self._vocab_dict[x] for x in s[0]] for s in sen]
+        input_x = [[self._vocab_dict[x]
+                    if self._vocab_dict.get(x) else self._vocab_dict["_UNK_"] for x in s[0]] for s in sen]
+
         input_y = [[self._vocab_dict["_GO_"]] + (sequence)
-                   for sequence in [[self._vocab_dict[x] for x in s[1]] for s in sen]]
+                   for sequence in
+                   [[self._vocab_dict[x] if self._vocab_dict.get(x) else self._vocab_dict["_UNK_"]
+                     for x in s[1]] for s in sen]]
+
         target_y = [(sequence) + [self._vocab_dict["_EOS_"]]
-                    for sequence in [[self._vocab_dict[x] for x in s[1]] for s in sen]]
+                    for sequence in
+                    [[self._vocab_dict[x] if self._vocab_dict.get(x) else self._vocab_dict["_UNK_"]
+                      for x in s[1]] for s in sen]]
 
         sequence_x_lengths = [len(seq) for seq in input_x]
         if max_sequence_x_length is None:
