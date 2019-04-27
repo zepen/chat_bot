@@ -34,10 +34,12 @@ python run_wei_chat.py
 
  #### 注意说明
  
-  * 训练过程中，若要将模型部署到 tensorflow-serving 中，令show_text=False，因为 tensorflow-serving 框架中貌似不支持py_func函数，会导致部署模型时图加载失败
+  * 训练过程中，若要将模型部署到 tensorflow-serving 中，令show_text=False，因为 tensorflow-serving 框架中貌似不支持py_func函数，会导致部署模型时图加载失败。
  
-  * 若在启动 run_tf_serving.py 时候，出现<font color="red">Error starting userland proxy: mkdir /port/tcp:0.0.0.0:8501:tcp:172.17.0.2:8501: input/output error</font>, 重启docker问题可解决.
+  * 若在启动 run_tf_serving.py 时候，出现<font color="red">Error starting userland proxy: mkdir /port/tcp:0.0.0.0:8501:tcp:172.17.0.2:8501: input/output error</font>, 重启docker问题可解决。
   
-  * 启动界面访问url使用 https开头, 则会出现 code 400, message Bad request version， 改http即可.
+  * 启动界面访问url使用 https开头, 则会出现 code 400, message Bad request version， 改http即可。
   
-  * 在win系统下，二维码生成到项目目录下; 在linux系统下，二维码打印在控制台，扫码即可登录.
+  * 在win系统下，二维码生成到项目目录下; 在linux系统下，二维码打印在控制台，扫码即可登录。
+  
+  * 在win10下安装pyltp，不要采用pip install pyltp，因为编译会不通过，可参考 [https://blog.csdn.net/weixin_40899194/article/details/79702468](https://blog.csdn.net/weixin_40899194/article/details/79702468) 方式进行安装。

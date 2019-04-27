@@ -10,8 +10,7 @@ class Connection(object):
     def __init__(self):
         self._config = ConfigParser()
         self._config_path = "./config/"
-        self._config.read(self._config_path + "tf_serving.ini")
-        self._object_str = "This is connection object!"
+        self._object_str = "[INFO] This is connection object!"
 
     def __str__(self):
         return self._object_str
@@ -29,12 +28,13 @@ class ConnectionTFServing(Connection):
 
     def __init__(self):
         super(ConnectionTFServing, self).__init__()
+        self._config.read(self._config_path + "tf_serving.ini")
         self._ip = self._config.get("tensorflow_serving", "ip")
         self._port = self._config.get("tensorflow_serving", "port")
         self._path = self._config.get("tensorflow_serving", "path")
         self._name = self._config.get("tensorflow_serving", "name")
         self._url = "http://" + self._ip + ":" + self._port + self._path
-        self._object_str = "This is connection tf_serving object!"
+        self._object_str = "[INFO] This is connection tf_serving object!"
 
     def __str__(self):
         return self._object_str
@@ -43,10 +43,29 @@ class ConnectionTFServing(Connection):
     def url(self):
         return self._url
 
-    @property
-    def port(self):
-        return self._port
+
+class ConnectionNeo4j(Connection):
+
+    def __init__(self):
+        super(ConnectionNeo4j, self).__init__()
+        self._config.read(self._config_path + "neo4j.ini")
+        self._ip = self._config.get("neo4j_serving", "ip")
+        self._port = self._config.get("neo4j_serving", "port")
+        self._username = self._config.get("neo4j_serving", "user")
+        self._password = self._config.get("neo4j_serving", "passwd")
+        self._object_str = "[INFO] This is connection neo4j object!"
+
+    def __str__(self):
+        return self._object_str
 
     @property
-    def name(self):
-        return self._name
+    def ip(self):
+        return self._ip
+
+    @property
+    def username(self):
+        return self._username
+
+    @property
+    def password(self):
+        return self._password
