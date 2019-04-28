@@ -20,9 +20,5 @@ print("URL {}".format(conn_tf_serving.url))
 
 def test_get_tf_serving():
     print("[Response]: {}".format(
-        predict_func("傻逼", vd, rvd, m_config, rule_c))
+        predict_func("你是傻逼吗？", vd, rvd, m_config, rule_c))
     )
-
-
-if __name__ == '__main__':
-    test_get_tf_serving()

@@ -8,25 +8,36 @@ from pyltp import Segmentor, Postagger, NamedEntityRecognizer
 class NerModel(object):
 
     def __init__(self):
-        pass
+        self._object_str = "[INFO] This is ner object!"
+
+    def __str__(self):
+        return self._object_str
 
 
 class BirLstmCrf(NerModel):
 
     def __init__(self):
         super().__init__()
+        self._object_str = "[INFO] This is bir_lstm_crf object!"
+
+    def __str__(self):
+        return self._object_str
 
 
 class Ltp(NerModel):
 
     def __init__(self):
-        super().__init__()
+        super(Ltp, self).__init__()
         self._model_path = "./model/ltp/"
         self._seg = Segmentor()
         self._pos = Postagger()
         self._recognizer = NamedEntityRecognizer()
         self._load_model()
+        self._object_str = "[INFO] This is ltp object!"
         print("[INFO] All model is load!")
+
+    def __str__(self):
+        return self._object_str
 
     def _load_model(self):
         self._seg.load(self._model_path + "cws.model")

@@ -34,6 +34,8 @@ seq2seq_model = Seq2SeqModel(
     mc,
     batch_size=mc.batch_size,
     vocab_size=mc.vocab_size,
+    beam_search=mc.beam_search,
+    beam_size=mc.beam_size,
     mode="train",
     vocab_dict=processing_corpus.vocab_dict,
     r_vocab_dict=processing_corpus.r_vocab_dict,

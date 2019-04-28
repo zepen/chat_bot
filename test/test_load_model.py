@@ -22,7 +22,3 @@ def test_load_model():
                 "inputs/encoder_inputs_length:0": [4],
                 "inputs/batch_size:0": [1]
             })))
-
-
-if __name__ == '__main__':
-    test_load_model()

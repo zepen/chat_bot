@@ -7,6 +7,8 @@ class ModelConfig(object):
     device = "cpu"
     gpu_no = "0"
     gpu_options = True
+    beam_search = 1
+    beam_size = 5
     vocab_size = 10000
     batch_size = 32
     input_embedding_size = 64

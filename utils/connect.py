@@ -43,6 +43,14 @@ class ConnectionTFServing(Connection):
     def url(self):
         return self._url
 
+    @property
+    def port(self):
+        return self._port
+
+    @property
+    def name(self):
+        return self._name
+
 
 class ConnectionNeo4j(Connection):
 
@@ -69,3 +77,29 @@ class ConnectionNeo4j(Connection):
     @property
     def password(self):
         return self._password
+
+
+class ConnectBaiduAI(Connection):
+
+    def __init__(self):
+        super(ConnectBaiduAI, self).__init__()
+        self._config.read(self._config_path + "baidu_ai.ini")
+        self._app_id = self._config.get("baidu_ai", "app_id")
+        self._api_key = self._config.get("baidu_ai", "api_key")
+        self._secret_key = self._config.get("baidu_ai", "secret_key")
+        self._object_str = "[INFO] This is connection baidu_ai object!"
+
+    def __str__(self):
+        return self._object_str
+
+    @property
+    def app_id(self):
+        return self._app_id
+
+    @property
+    def api_key(self):
+        return self._api_key
+
+    @property
+    def secret_key(self):
+        return self._secret_key

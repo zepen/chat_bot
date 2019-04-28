@@ -3,6 +3,7 @@
 定义seq2seq模型
 """
 import tensorflow as tf
+from tensorflow.python.util import nest
 
 
 class Seq2SeqModel(object):
@@ -59,17 +60,28 @@ class Seq2SeqModel(object):
                         [forward_state[-1][1], backward_state[-1][1]], axis=1, name="state_h")
                     self._encoder_final_state = tf.nn.rnn_cell.LSTMStateTuple(encoder_state_c, encoder_state_h)
 
-            with tf.name_scope("attention"):
-                with tf.variable_scope("", reuse=tf.AUTO_REUSE):
-                    attention_mechanism = tf.contrib.seq2seq.BahdanauAttention(
-                        num_units=hp.encoder_hidden_units,
-                        memory=self._encoder_output,
-                        memory_sequence_length=self._encoder_inputs_length
-                    )
-
             with tf.name_scope("decoder"):
+                self._beam_search = kwargs["beam_search"]
+                self._beam_size = kwargs["beam_size"]
+                if self._beam_search:
+                    tf.logging.info("use beamsearch decoding.")
+                    self._encoder_outputs = tf.contrib.seq2seq.tile_batch(
+                        self._encoder_output, multiplier=self._beam_size)
+                    self._encoder_state = nest.map_structure(
+                        lambda s: tf.contrib.seq2seq.tile_batch(s, self._beam_size), self._encoder_final_state)
+                    self._encoder_inputs_length = tf.contrib.seq2seq.tile_batch(
+                        self._encoder_inputs_length, multiplier=self._beam_size)
+
+                with tf.name_scope("attention"):
+                    with tf.variable_scope("", reuse=tf.AUTO_REUSE):
+                        attention_mechanism = tf.contrib.seq2seq.BahdanauAttention(
+                            num_units=hp.encoder_hidden_units,
+                            memory=self._encoder_output,
+                            memory_sequence_length=self._encoder_inputs_length
+                        )
+
                 with tf.variable_scope("", reuse=tf.AUTO_REUSE):
-                    decoder_cell = tf.nn.rnn_cell.LSTMCell(num_units=2*hp.decoder_hidden_units)
+                    decoder_cell = tf.nn.rnn_cell.LSTMCell(num_units=2 * hp.decoder_hidden_units)
                     decoder_cell = tf.nn.rnn_cell.DropoutWrapper(
                         decoder_cell, output_keep_prob=hp.decoder_keep_prob)
                     decoder_cell = tf.contrib.seq2seq.AttentionWrapper(
@@ -119,19 +131,33 @@ class Seq2SeqModel(object):
             with tf.name_scope("predict"):
                 start_tokens = tf.ones([self._batch_size[0]], tf.int32) * self._vocab_dict['_GO_']
                 end_token = self._vocab_dict['_EOS_']
-                decoding_helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(
-                    embedding=embeddings, start_tokens=start_tokens, end_token=end_token
-                )
-                inference_decoder = tf.contrib.seq2seq.BasicDecoder(
-                    cell=decoder_cell, helper=decoding_helper,
-                    initial_state=decoder_initial_state,
-                    output_layer=output_layer
-                )
+                if self._beam_search:
+                    inference_decoder = tf.contrib.seq2seq.BeamSearchDecoder(
+                        cell=decoder_cell,
+                        embedding=embeddings,
+                        start_tokens=start_tokens,
+                        end_token=end_token,
+                        initial_state=decoder_initial_state,
+                        beam_width=self._beam_size,
+                        output_layer=output_layer
+                    )
+                else:
+                    decoding_helper = tf.contrib.seq2seq.GreedyEmbeddingHelper(
+                        embedding=embeddings, start_tokens=start_tokens, end_token=end_token
+                    )
+                    inference_decoder = tf.contrib.seq2seq.BasicDecoder(
+                        cell=decoder_cell, helper=decoding_helper,
+                        initial_state=decoder_initial_state,
+                        output_layer=output_layer
+                    )
                 decoder_outputs, _, _ = tf.contrib.seq2seq.dynamic_decode(
-                    decoder=inference_decoder, maximum_iterations=hp.max_decode_len
+                        decoder=inference_decoder, maximum_iterations=hp.max_decode_len
                 )
-                with tf.name_scope("prediction"):
-                    self._decoder_prediction = decoder_outputs.sample_id
+                if self._beam_search:
+                    self._decoder_prediction = decoder_outputs.predicted_ids
+                else:
+                    with tf.name_scope("prediction"):
+                        self._decoder_prediction = decoder_outputs.sample_id
 
             if kwargs["show_text"]:
                 tf.summary.text('encoder_inputs',

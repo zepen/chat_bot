@@ -10,7 +10,3 @@ os.chdir("..")
 
 def test_knowledge_graph():
     kg = KnowledgeGraph()
-
-
-if __name__ == '__main__':
-    test_knowledge_graph()
