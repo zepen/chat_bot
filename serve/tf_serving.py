@@ -33,7 +33,7 @@ def docker_run(docker_file_path):
     docker_build(docker_file_path)
     os.chdir("..")
     path = os.getcwd().replace("\\", "/").replace(":", "").lower()
-    v = "-v /" + path + "/model:/models/chat_bot "
+    v = "-v /home/share:/models/chat_bot "
     e = "-e MODEL_NAME=chat_bot tensorflow/serving &"
     DOCKER_RUN += (v + e)
     print(DOCKER_RUN)

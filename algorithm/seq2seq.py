@@ -3,7 +3,6 @@
 定义seq2seq模型
 """
 import tensorflow as tf
-from tensorflow.python.util import nest
 
 
 class Seq2SeqModel(object):
@@ -20,7 +19,10 @@ class Seq2SeqModel(object):
             set_device = "/gpu:" + hp.gpu_no
 
         self._vocab_dict = kwargs["vocab_dict"]  # 用于解码
+        self._vocab_size = len(self._vocab_dict)
         self._r_vocab_dict = kwargs["r_vocab_dict"]  # 用于映射解码结果
+        self._global_step = tf.Variable(0, name='global_step', trainable=False)
+        self._saver = tf.train.Saver()
 
         with tf.device(set_device):
             with tf.name_scope("inputs"):
@@ -37,7 +39,7 @@ class Seq2SeqModel(object):
         with tf.device('/cpu:0'):
             with tf.name_scope("embedding"):
                 embeddings = tf.Variable(
-                    tf.random_uniform([kwargs["vocab_size"], hp.input_embedding_size], -1.0, 1.0), dtype=tf.float32)
+                    tf.random_uniform([self._vocab_size, hp.input_embedding_size], -1.0, 1.0), dtype=tf.float32)
                 self._encoder_inputs_embedded = tf.nn.embedding_lookup(embeddings, self._encoder_inputs)
                 self._decoder_inputs_embedded = tf.nn.embedding_lookup(embeddings, self._decoder_inputs)
 
@@ -53,7 +55,7 @@ class Seq2SeqModel(object):
                         )
                     forward_state, backward_state = bi_state
                     forward_out, backward_out = bi_output
-                    self._encoder_output = tf.concat([forward_out, backward_out], axis=2, name="encoder_output")
+                    self._encoder_outputs = tf.concat([forward_out, backward_out], axis=2, name="encoder_output")
                     encoder_state_c = tf.concat(
                         [forward_state[-1][0], backward_state[-1][0]], axis=1, name="state_c")
                     encoder_state_h = tf.concat(
@@ -61,22 +63,24 @@ class Seq2SeqModel(object):
                     self._encoder_final_state = tf.nn.rnn_cell.LSTMStateTuple(encoder_state_c, encoder_state_h)
 
             with tf.name_scope("decoder"):
+                batch_size = self._batch_size[0]
                 self._beam_search = kwargs["beam_search"]
-                self._beam_size = kwargs["beam_size"]
-                if self._beam_search:
-                    tf.logging.info("use beamsearch decoding.")
-                    self._encoder_outputs = tf.contrib.seq2seq.tile_batch(
-                        self._encoder_output, multiplier=self._beam_size)
-                    self._encoder_state = nest.map_structure(
-                        lambda s: tf.contrib.seq2seq.tile_batch(s, self._beam_size), self._encoder_final_state)
-                    self._encoder_inputs_length = tf.contrib.seq2seq.tile_batch(
-                        self._encoder_inputs_length, multiplier=self._beam_size)
+                if kwargs["mode"] == "decode" and kwargs["decode_mode"] == "beam_search":
+                    if self._beam_search:
+                        self._beam_size = kwargs["beam_size"]
+                        tf.logging.info("use beamsearch decoding.")
+                        self._encoder_outputs = tf.contrib.seq2seq.tile_batch(
+                            self._encoder_outputs, multiplier=self._beam_size)
+                        self._encoder_final_state = tf.contrib.seq2seq.tile_batch(
+                            self._encoder_final_state, multiplier=self._beam_size)
+                        self._encoder_inputs_length = tf.contrib.seq2seq.tile_batch(
+                            self._encoder_inputs_length, multiplier=self._beam_size)
 
                 with tf.name_scope("attention"):
                     with tf.variable_scope("", reuse=tf.AUTO_REUSE):
                         attention_mechanism = tf.contrib.seq2seq.BahdanauAttention(
                             num_units=hp.encoder_hidden_units,
-                            memory=self._encoder_output,
+                            memory=self._encoder_outputs,
                             memory_sequence_length=self._encoder_inputs_length
                         )
 
@@ -90,18 +94,26 @@ class Seq2SeqModel(object):
                         attention_layer_size=hp.decoder_hidden_units,
                         name='attention_wrapper')
 
-                decoder_initial_state = decoder_cell.zero_state(
-                    batch_size=self._batch_size[0], dtype=tf.float32).clone(cell_state=self._encoder_final_state)
+                if kwargs["mode"] == "decode" and kwargs["decode_mode"] == "beam_search":
+                    decoder_initial_state = decoder_cell.zero_state(
+                        batch_size=batch_size * self._beam_size, dtype=tf.float32).clone(
+                        cell_state=self._encoder_final_state)
+                else:
+                    decoder_initial_state = decoder_cell.zero_state(
+                        batch_size=batch_size, dtype=tf.float32).clone(
+                        cell_state=self._encoder_final_state
+                    )
 
                 with tf.name_scope("output_layer"):
                     output_layer = tf.layers.Dense(
-                        hp.vocab_size,
+                        self._vocab_size,
                         kernel_initializer=tf.truncated_normal_initializer(mean=0.0, stddev=0.1)
                     )
 
                 training_helper = tf.contrib.seq2seq.TrainingHelper(
                     inputs=self._decoder_inputs_embedded,
                     sequence_length=self._decoder_targets_length,
+                    time_major=False,
                     name='training_helper'
                 )
                 training_decoder = tf.contrib.seq2seq.BasicDecoder(
@@ -113,25 +125,26 @@ class Seq2SeqModel(object):
                 self._decoder_outputs, _, _ = \
                     tf.contrib.seq2seq.dynamic_decode(
                         decoder=training_decoder,
-                        impute_finished=False,
+                        impute_finished=True,
                         maximum_iterations=self._max_target_sequence_length)
 
-            with tf.name_scope("train"):
-                with tf.name_scope("logits"):
-                    self._logits = tf.identity(self._decoder_outputs.rnn_output)
+            if kwargs["mode"] == "train":
+                with tf.name_scope("train"):
+                    with tf.name_scope("logits"):
+                        self._logits = tf.identity(self._decoder_outputs.rnn_output)
 
-                with tf.name_scope("loss"):
-                    self._loss = tf.contrib.seq2seq.sequence_loss(
-                        logits=self._logits, targets=self._decoder_targets, weights=self._mask)
-                tf.summary.scalar("train_loss", self._loss)
+                    with tf.name_scope("loss"):
+                        self._loss = tf.contrib.seq2seq.sequence_loss(
+                            logits=self._logits, targets=self._decoder_targets, weights=self._mask)
+                    tf.summary.scalar("train_loss", self._loss)
 
-                with tf.name_scope("trian_op"):
-                    self._train_op = tf.train.AdamOptimizer().minimize(self._loss)
+                    with tf.name_scope("trian_op"):
+                        self._train_op = tf.train.AdamOptimizer().minimize(self._loss, global_step=self._global_step)
 
             with tf.name_scope("predict"):
-                start_tokens = tf.ones([self._batch_size[0]], tf.int32) * self._vocab_dict['_GO_']
+                start_tokens = tf.ones([batch_size], tf.int32) * self._vocab_dict['_GO_']
                 end_token = self._vocab_dict['_EOS_']
-                if self._beam_search:
+                if self._beam_search and kwargs["mode"] == "decode" and kwargs["decode_mode"] == "beam_search":
                     inference_decoder = tf.contrib.seq2seq.BeamSearchDecoder(
                         cell=decoder_cell,
                         embedding=embeddings,
@@ -153,13 +166,14 @@ class Seq2SeqModel(object):
                 decoder_outputs, _, _ = tf.contrib.seq2seq.dynamic_decode(
                         decoder=inference_decoder, maximum_iterations=hp.max_decode_len
                 )
-                if self._beam_search:
-                    self._decoder_prediction = decoder_outputs.predicted_ids
+                if self._beam_search and kwargs["mode"] == "decode" and kwargs["decode_mode"] == "beam_search":
+                    with tf.name_scope("prediction"):
+                        self._decoder_prediction = decoder_outputs.predicted_ids
                 else:
                     with tf.name_scope("prediction"):
                         self._decoder_prediction = decoder_outputs.sample_id
 
-            if kwargs["show_text"]:
+            if kwargs["mode"] == "train":
                 tf.summary.text('encoder_inputs',
                                 tf.py_func(self._index_to_text, [self._encoder_inputs[0]], tf.string))
                 tf.summary.text('decoder_inputs',
@@ -215,6 +229,10 @@ class Seq2SeqModel(object):
     def train_op(self):
         return self._train_op
 
+    @property
+    def global_step(self):
+        return self._global_step
+
     @staticmethod
     def save_model(saver, sess, save_path, gs):
         """  保存模型
@@ -226,22 +244,18 @@ class Seq2SeqModel(object):
         :return:
         """
         try:
-            saver.save(sess, save_path, gs)
+            saver.save(sess, save_path, global_step=gs)
         except Exception as e:
             tf.logging.error("[SAVER_MODEL] {}".format(str(e)))
 
-    @staticmethod
-    def load_model(sess, meta_path, checkpoint_path):
+    def load_model(self, sess):
         """  加载模型
 
         :param sess:
-        :param meta_path:
-        :param checkpoint_path:
         :return:
         """
-        saver = tf.train.import_meta_graph(meta_path)
         try:
-            saver.restore(sess, tf.train.latest_checkpoint(checkpoint_path))
+            self._saver.restore(sess, tf.train.latest_checkpoint("./logs"))
         except Exception as e:
             tf.logging.error("[LOAD_MODEL] {}".format(str(e)))
 

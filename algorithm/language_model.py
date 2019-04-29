@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 """
-用语音模型来评估回复结果
+用语言模型来评估回复结果
 """
 from aip import AipNlp
 from utils.connect import ConnectBaiduAI

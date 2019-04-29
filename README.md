@@ -43,3 +43,5 @@ python run_wei_chat.py
   * 在win系统下，二维码生成到项目目录下; 在linux系统下，二维码打印在控制台，扫码即可登录。
   
   * 在win10下安装pyltp，不要采用pip install pyltp，因为编译会不通过，可参考 [https://blog.csdn.net/weixin_40899194/article/details/79702468](https://blog.csdn.net/weixin_40899194/article/details/79702468) 方式进行安装。
+  
+  * 在采用beam_search模式进行解码时，会遇到KeyError: 'GatherTree'的问题，则在加载模型时加入 from tensorflow.contrib.seq2seq.python.ops import beam_search_ops可解决此问题，具体原因见 [https://github.com/tensorflow/tensorflow/issues/12927](https://github.com/tensorflow/tensorflow/issues/12927)

@@ -10,7 +10,7 @@ from algorithm.seq2seq import Seq2SeqModel
 
 tf.app.flags.DEFINE_string('device', 'cpu', "设定训练设备")
 tf.app.flags.DEFINE_integer('cpu_num', 8, "cpu数目")
-tf.app.flags.DEFINE_integer('train_steps_num', 1000, "设置迭代次数")
+tf.app.flags.DEFINE_integer('train_steps_num', 10, "设置迭代次数")
 tf.app.flags.DEFINE_integer('batch_size', 32, "训练批次大小")
 tf.app.flags.DEFINE_string("model_version", "001", "模型版本")
 FLAGS = tf.app.flags.FLAGS
@@ -30,24 +30,18 @@ config = tf.ConfigProto(
 )
 
 processing_corpus = ProcessingCorps()
-seq2seq_model = Seq2SeqModel(
-    mc,
-    batch_size=mc.batch_size,
-    vocab_size=mc.vocab_size,
-    beam_search=mc.beam_search,
-    beam_size=mc.beam_size,
-    mode="train",
-    vocab_dict=processing_corpus.vocab_dict,
-    r_vocab_dict=processing_corpus.r_vocab_dict,
-    show_text=False
-)
 
 
-def main(_):
-    if not os.path.exists("model/"):
-        os.mkdir("model/")
-    if os.path.exists("model/" + mc.model_version):
-        os.remove("model/" + mc.model_version + "/")
+def train_model():
+    seq2seq_model_train = Seq2SeqModel(
+        mc,
+        batch_size=mc.batch_size,
+        beam_search=mc.beam_search,
+        beam_size=mc.beam_size,
+        mode="train",
+        vocab_dict=processing_corpus.vocab_dict,
+        r_vocab_dict=processing_corpus.r_vocab_dict,
+    )
     saver = tf.train.Saver()
     with tf.Session(config=config) as sess:
         writer = tf.summary.FileWriter("logs/", graph=sess.graph)
@@ -57,28 +51,49 @@ def main(_):
         for step in range(FLAGS.train_steps_num):
             encoder_inputs, decoder_inputs, decoder_target, encoder_inputs_length, decoder_targets_length \
                 = processing_corpus.get_batch(mc.batch_size)
-            _, summary, loss = sess.run(
-                [seq2seq_model.train_op, merge_all, seq2seq_model.loss],
+            _, gs, summary, loss = sess.run(
+                [seq2seq_model_train.train_op, seq2seq_model_train.global_step, merge_all, seq2seq_model_train.loss],
                 feed_dict={
-                    seq2seq_model.batch_size: [mc.batch_size] * mc.batch_size,
-                    seq2seq_model.encoder_inputs: encoder_inputs,
-                    seq2seq_model.encoder_inputs_length: encoder_inputs_length,
-                    seq2seq_model.decoder_inputs: decoder_inputs,
-                    seq2seq_model.decoder_targets: decoder_target,
-                    seq2seq_model.decoder_targets_length: decoder_targets_length
+                    seq2seq_model_train.batch_size: [mc.batch_size] * mc.batch_size,
+                    seq2seq_model_train.encoder_inputs: encoder_inputs,
+                    seq2seq_model_train.encoder_inputs_length: encoder_inputs_length,
+                    seq2seq_model_train.decoder_inputs: decoder_inputs,
+                    seq2seq_model_train.decoder_targets: decoder_target,
+                    seq2seq_model_train.decoder_targets_length: decoder_targets_length
                 }
             )
             writer.add_summary(summary, step)
             if step % 1000 == 0:
-                seq2seq_model.save_model(saver, sess, save_path="logs/", gs=step)
-        seq2seq_model.export_model_to_pb(
+                seq2seq_model_train.save_model(saver, sess, save_path="logs/s2s.ckpt", gs=gs // 1000)
+
+
+def main(_):
+    if not os.path.exists("model/"):
+        os.mkdir("model/")
+    # train_model()
+    tf.reset_default_graph()
+    seq2seq_model_decode = Seq2SeqModel(
+        mc,
+        batch_size=mc.batch_size,
+        beam_search=mc.beam_search,
+        beam_size=mc.beam_size,
+        decode_mode="beam_search",
+        mode="decode",
+        vocab_dict=processing_corpus.vocab_dict,
+        r_vocab_dict=processing_corpus.r_vocab_dict,
+    )
+    with tf.Session() as sess:
+        init = tf.global_variables_initializer()
+        sess.run(init)
+        seq2seq_model_decode.load_model(sess)
+        seq2seq_model_decode.export_model_to_pb(
             sess,
             save_path="model/",
             model_version=mc.model_version,
-            encoder_inputs=seq2seq_model.encoder_inputs,
-            encoder_inputs_length=seq2seq_model.encoder_inputs_length,
-            batch_size=seq2seq_model.batch_size,
-            predictions=seq2seq_model.decoder_prediction
+            encoder_inputs=seq2seq_model_decode.encoder_inputs,
+            encoder_inputs_length=seq2seq_model_decode.encoder_inputs_length,
+            batch_size=seq2seq_model_decode.batch_size,
+            predictions=seq2seq_model_decode.decoder_prediction
         )
 
 
