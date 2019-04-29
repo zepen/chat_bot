@@ -168,7 +168,7 @@ class Seq2SeqModel(object):
                 )
                 if self._beam_search and kwargs["mode"] == "decode" and kwargs["decode_mode"] == "beam_search":
                     with tf.name_scope("prediction"):
-                        self._decoder_prediction = decoder_outputs.predicted_ids
+                        self._decoder_prediction = tf.transpose(decoder_outputs.predicted_ids, perm=[0, 2, 1])
                 else:
                     with tf.name_scope("prediction"):
                         self._decoder_prediction = decoder_outputs.sample_id
