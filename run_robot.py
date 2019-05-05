@@ -3,8 +3,11 @@
 启动robot
 """
 from flask import Flask
+from serve.docker_serve import docker_run
 from serve.flask_serve import index, api
 
+
+docker_run("docker/")
 app = Flask(__name__)
 app.register_blueprint(index)
 app.register_blueprint(api)

@@ -70,7 +70,7 @@ def train_model():
 def main(_):
     if not os.path.exists("model/"):
         os.mkdir("model/")
-    # train_model()
+    train_model()
     tf.reset_default_graph()
     seq2seq_model_decode = Seq2SeqModel(
         mc,

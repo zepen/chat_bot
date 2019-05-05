@@ -58,9 +58,12 @@ class ConnectionNeo4j(Connection):
         super(ConnectionNeo4j, self).__init__()
         self._config.read(self._config_path + "neo4j.ini")
         self._ip = self._config.get("neo4j_serving", "ip")
-        self._port = self._config.get("neo4j_serving", "port")
+        self._port_1 = self._config.get("neo4j_serving", "port_1")
+        self._port_2 = self._config.get("neo4j_serving", "port_2")
+        self._port_3 = self._config.get("neo4j_serving", "port_3")
         self._username = self._config.get("neo4j_serving", "user")
         self._password = self._config.get("neo4j_serving", "passwd")
+        self._name = self._config.get("neo4j_serving", "name")
         self._object_str = "[INFO] This is connection neo4j object!"
 
     def __str__(self):
@@ -71,12 +74,28 @@ class ConnectionNeo4j(Connection):
         return self._ip
 
     @property
+    def port_1(self):
+        return self._port_1
+
+    @property
+    def port_2(self):
+        return self._port_2
+
+    @property
+    def port_3(self):
+        return self._port_3
+
+    @property
     def username(self):
         return self._username
 
     @property
     def password(self):
         return self._password
+
+    @property
+    def name(self):
+        return self._name
 
 
 class ConnectBaiduAI(Connection):

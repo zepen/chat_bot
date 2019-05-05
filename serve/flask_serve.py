@@ -12,7 +12,7 @@ from algorithm.named_entity_recognizer import Ltp
 from utils.loggings import log
 from utils.load_files import LoadDictionary
 from config.config import ModelConfig
-from .tf_serving import predict_func
+from .docker_serve import predict_func
 
 index = Blueprint('index', __name__)
 api = Blueprint('api', __name__)

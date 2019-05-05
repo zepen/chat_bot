@@ -8,7 +8,7 @@ from utils.load_files import LoadDictionary
 from algorithm.processing import RuleCorrection
 os.chdir("..")
 
-from serve.tf_serving import predict_func, conn_tf_serving
+from serve.docker_serve import predict_func, conn_tf_serving
 
 load_dict = LoadDictionary()
 m_config = ModelConfig()
