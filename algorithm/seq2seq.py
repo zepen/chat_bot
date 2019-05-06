@@ -106,7 +106,7 @@ class Seq2SeqModel(object):
 
                 with tf.name_scope("output_layer"):
                     output_layer = tf.layers.Dense(
-                        self._vocab_size,
+                        self._vocab_size + 2,
                         kernel_initializer=tf.truncated_normal_initializer(mean=0.0, stddev=0.1)
                     )
 
