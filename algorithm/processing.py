@@ -16,9 +16,14 @@ class ProcessingCorps(object):
         self._r_vocab_dict = load_dictionary.r_vocab_dict
         load_corpus = LoadCorpus()
         self._x_data = load_corpus.x_data
+        print("[INFO] Data size is {}.".format(len(self._x_data)))
+        self._clear_data()
+        print("[INFO] Data size is {} after clear.".format(len(self._x_data)))
 
-    def _replace_rule(self, x_):
-        pass
+    def _clear_data(self):
+        for sen_pair in self._x_data:
+            if len(sen_pair[0]) < 2 or len(sen_pair[0]) > 30 or len(sen_pair[1]) < 2 or len(sen_pair[1]) > 30:
+                self._x_data.remove(sen_pair)
 
     def _get_sentences(self, batch_size):
         """ Get batch sentence from data
