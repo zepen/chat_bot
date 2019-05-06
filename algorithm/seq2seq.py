@@ -260,6 +260,19 @@ class Seq2SeqModel(object):
             tf.logging.error("[LOAD_MODEL] {}".format(str(e)))
 
     @staticmethod
+    def load_pb_model(sess, model_version):
+        """  加载pb模型
+
+        :param sess:
+        :param model_version:
+        :return:
+        """
+        try:
+            tf.saved_model.loader.load(sess, [tf.saved_model.tag_constants.SERVING], "model/" + model_version)
+        except Exception as e:
+            tf.logging.error("[LOAD_PB_MODEL] {}".format(str(e)))
+
+    @staticmethod
     def export_model_to_pb(sess, save_path, model_version, **kwargs):
         """ 保存模型为pb格式
 

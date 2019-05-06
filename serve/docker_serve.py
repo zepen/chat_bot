@@ -19,7 +19,7 @@ DOCKER_RUN_NEO4J = "docker run -d -p " + str(conn_neo4j.port_1) + ":" + str(conn
                    "-p " + str(conn_neo4j.port_2) + ":" + str(conn_neo4j.port_2) + " " + \
                    "-p " + str(conn_neo4j.port_3) + ":" + str(conn_neo4j.port_3) + " " + \
                    "--name=" + conn_neo4j.name + " " + \
-                   "--env=NEO4J_AUTH=" + str(conn_neo4j.username) + "/" + str(conn_neo4j.password)
+                   "--env=NEO4J_AUTH=" + str(conn_neo4j.username) + "/" + str(conn_neo4j.password) + " "
 
 
 def docker_build(docker_file_path):
@@ -41,10 +41,11 @@ def docker_run(docker_file_path):
     docker_build(docker_file_path)
     os.chdir("..")
     path = os.getcwd().replace("\\", "/").replace(":", "").lower()
-    v = "-v /home/share:/models/chat_bot "
-    e = "-e MODEL_NAME=chat_bot tensorflow/serving"
-    DOCKER_RUN_TFS += (v + e)
-    DOCKER_RUN_NEO4J += " neo4j:latest"
+    v_1 = "-v /" + path + "/model/:/models/chat_bot "
+    v_2 = "-v /" + path + "/data/:/var/lib/neo4j/import"
+    e = "-e MODEL_NAME=chat_bot"
+    DOCKER_RUN_TFS += (v_1 + e + " tensorflow/serving")
+    DOCKER_RUN_NEO4J += (v_2 + " neo4j:latest")
     print("[tensorflow-serving docker run command]: {}".format(DOCKER_RUN_TFS))
     print("[neo4j docker run command]: {}".format(DOCKER_RUN_NEO4J))
     os.system(DOCKER_RUN_TFS)

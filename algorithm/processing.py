@@ -17,8 +17,11 @@ class ProcessingCorps(object):
         load_corpus = LoadCorpus()
         self._x_data = load_corpus.x_data
 
+    def _replace_rule(self, x_):
+        pass
+
     def _get_sentences(self, batch_size):
-        """ Get batch sentence from corpus
+        """ Get batch sentence from data
 
         :param batch_size:
         :return:

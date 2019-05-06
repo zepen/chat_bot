@@ -9,4 +9,5 @@ os.chdir("..")
 
 
 def test_knowledge_graph():
-    kg = KnowledgeGraph()
+    kg = KnowledgeGraph("artists.csv")
+    kg.delete_node()

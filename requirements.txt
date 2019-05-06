@@ -1,3 +1,5 @@
+numpy==1.15.1
+baidu-aip==2.2.13.0
 pyltp==0.2.1
 py2neo==4.2.0
 flask==1.0.2
