@@ -39,7 +39,7 @@ class Seq2SeqModel(object):
         with tf.device('/cpu:0'):
             with tf.name_scope("embedding"):
                 embeddings = tf.Variable(
-                    tf.random_uniform([self._vocab_size + 1, hp.input_embedding_size], -1.0, 1.0), dtype=tf.float32)
+                    tf.random_uniform([self._vocab_size + 2, hp.input_embedding_size], -1.0, 1.0), dtype=tf.float32)
                 self._encoder_inputs_embedded = tf.nn.embedding_lookup(embeddings, self._encoder_inputs)
                 self._decoder_inputs_embedded = tf.nn.embedding_lookup(embeddings, self._decoder_inputs)
 
