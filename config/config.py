@@ -7,6 +7,8 @@ class ModelConfig(object):
     device = "cpu"
     gpu_no = "0"
     gpu_options = True
+    lr = 0.001
+    clip_norm = 5
     beam_search = 1
     beam_size = 5
     batch_size = 32

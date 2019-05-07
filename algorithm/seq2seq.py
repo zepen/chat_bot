@@ -139,7 +139,10 @@ class Seq2SeqModel(object):
                     tf.summary.scalar("train_loss", self._loss)
 
                     with tf.name_scope("trian_op"):
-                        self._train_op = tf.train.AdamOptimizer().minimize(self._loss, global_step=self._global_step)
+                        optimizer = tf.train.AdamOptimizer(learning_rate=hp.lr)
+                        grads, variables = zip(*optimizer.compute_gradients(self._loss))
+                        grads, global_norm = tf.clip_by_global_norm(grads, hp.clip_norm)
+                        self._train_op = optimizer.apply_gradients(zip(grads, variables), global_step=self._global_step)
 
             with tf.name_scope("predict"):
                 start_tokens = tf.ones([batch_size], tf.int32) * self._vocab_dict['_GO_']
