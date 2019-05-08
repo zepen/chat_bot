@@ -46,7 +46,11 @@ def train_model():
     with tf.Session(config=config) as sess:
         writer = tf.summary.FileWriter("logs/", graph=sess.graph)
         merge_all = tf.summary.merge_all()
-        sess.run(tf.global_variables_initializer())
+        try:
+            saver.restore(sess, tf.train.latest_checkpoint("logs/"))
+        except Exception as e:
+            print(e)
+            sess.run(tf.global_variables_initializer())
         tf.logging.info("Please open tensorboard to Supervisor train processing...")
         for step in range(FLAGS.train_steps_num):
             encoder_inputs, decoder_inputs, decoder_target, encoder_inputs_length, decoder_targets_length \
