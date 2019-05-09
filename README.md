@@ -32,7 +32,7 @@ python run_tf_serving.py
 python run_wei_chat.py
 ```
 
- #### 注意说明
+#### 注意说明
  
   * 训练过程中，若要将模型部署到 tensorflow-serving 中，令show_text=False，因为 tensorflow-serving 框架中貌似不支持py_func函数，会导致部署模型时图加载失败。
  
@@ -45,3 +45,9 @@ python run_wei_chat.py
   * 在win10下安装pyltp，不要采用pip install pyltp，因为编译会不通过，可参考 [https://blog.csdn.net/weixin_40899194/article/details/79702468](https://blog.csdn.net/weixin_40899194/article/details/79702468) 方式进行安装。
   
   * 在采用beam_search模式进行解码时，会遇到KeyError: 'GatherTree'的问题，则在加载模型时加入 from tensorflow.contrib.seq2seq.python.ops import beam_search_ops可解决此问题，具体原因见 [https://github.com/tensorflow/tensorflow/issues/12927](https://github.com/tensorflow/tensorflow/issues/12927)
+  
+  * 在调用百度语音识别API时，需要安装ffmseg，并配置好环境变量。
+  
+#### 未解决问题
+  *  通过tf-serving请求模型预测在beam_search模式下，不能得到结果。
+ 
