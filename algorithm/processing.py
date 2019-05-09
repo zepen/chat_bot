@@ -3,6 +3,7 @@
 Processing Data
 """
 import re
+import time
 import numpy as np
 from utils.loggings import log
 from utils.load_files import LoadDictionary, LoadCorpus
@@ -22,20 +23,24 @@ class ProcessingCorps(object):
         self._remove_sign = set(conn_rule.rule["remove_sign"])
         print("[INFO] Data size is {}.".format(len(self._x_data)))
         self._clear_data()
+        time.sleep(10)
         print("[INFO] Data size is {} after clear.".format(len(self._x_data)))
 
     def _clear_data(self):
         for sen_pair in self._x_data:
-            if len(sen_pair[0]) < 2 or len(sen_pair[0]) > 30 or len(sen_pair[1]) < 2 or len(sen_pair[1]) > 30:
+            sentence_a = "".join(sen_pair[0])
+            sentence_b = "".join(sen_pair[1])
+            all_char = set(list(sen_pair[0]) + list(sen_pair[1]))
+            if (len(sentence_a) < 2) or (len(sentence_a) > 30) or (len(sentence_b) < 2) or (len(sentence_b) > 30):
                 self._x_data.remove(sen_pair)
-            elif (not re.findall("[0-9]",  "".join(sen_pair[0])) is None) or \
-                    (not re.findall("[0-9]",  "".join(sen_pair[1])) is None):
+            elif len(re.findall("[0-9]",  sentence_a)) or len(re.findall("[0-9]",  sentence_b)):
                 self._x_data.remove(sen_pair)
-            elif (not re.findall("[a-zA-Z]",  "".join(sen_pair[0])) is None) or \
-                    (not re.findall("[a-zA-Z]",  "".join(sen_pair[1])) is None):
+            elif len(re.findall("[a-zA-Z]",  sentence_a)) or len(re.findall("[a-zA-Z]",  sentence_b)):
                 self._x_data.remove(sen_pair)
-            elif (sen_pair[0] in self._remove_sign) or (sen_pair[1] in self._remove_sign):
+            elif len(self._remove_sign.intersection(all_char)):
                 self._x_data.remove(sen_pair)
+            else:
+                continue
 
     def _get_sentences(self, batch_size):
         """ Get batch sentence from data

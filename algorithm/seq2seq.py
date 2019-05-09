@@ -35,6 +35,7 @@ class Seq2SeqModel(object):
                 self._mask = tf.sequence_mask(
                     self._decoder_targets_length, self._max_target_sequence_length, dtype=tf.float32, name='masks')
                 self._batch_size = tf.placeholder(shape=[None], dtype=tf.int32, name='batch_size')
+                self._max_len_index = tf.argmax(self._decoder_targets_length, name="max_len_index")
 
         with tf.device('/cpu:0'):
             with tf.name_scope("embedding"):
@@ -178,11 +179,11 @@ class Seq2SeqModel(object):
 
             if kwargs["mode"] == "train":
                 tf.summary.text('encoder_inputs',
-                                tf.py_func(self._index_to_text, [self._encoder_inputs[0]], tf.string))
+                                tf.py_func(self._index_to_text, [self._encoder_inputs[self._max_len_index]], tf.string))
                 tf.summary.text('decoder_inputs',
-                                tf.py_func(self._index_to_text, [self._decoder_inputs[0]], tf.string))
+                                tf.py_func(self._index_to_text, [self._decoder_inputs[self._max_len_index]], tf.string))
                 tf.summary.text('targets_predict',
-                                tf.py_func(self._index_to_text, [self._decoder_prediction[0]], tf.string))
+                                tf.py_func(self._index_to_text, [self._decoder_prediction[self._max_len_index]], tf.string))
 
     def _index_to_text(self, input_tensor):
         """
