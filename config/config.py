@@ -18,4 +18,3 @@ class ModelConfig(object):
     layer_num = 3
     decoder_keep_prob = 0.75
     max_decode_len = 30
-    replace_sentence = "I am NLAI"

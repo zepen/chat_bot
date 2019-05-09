@@ -3,11 +3,12 @@
 Processing Data
 """
 import re
-import json
 import numpy as np
 from utils.loggings import log
 from utils.load_files import LoadDictionary, LoadCorpus
 from utils.connect import ConnectionRule
+
+conn_rule = ConnectionRule()
 
 
 class ProcessingCorps(object):
@@ -18,11 +19,10 @@ class ProcessingCorps(object):
         self._r_vocab_dict = load_dictionary.r_vocab_dict
         load_corpus = LoadCorpus()
         self._x_data = load_corpus.x_data
+        self._remove_sign = set(conn_rule.rule["remove_sign"])
         print("[INFO] Data size is {}.".format(len(self._x_data)))
         self._clear_data()
         print("[INFO] Data size is {} after clear.".format(len(self._x_data)))
-        conn_rule = ConnectionRule()
-        self._remove_sign = set(conn_rule.rule["remove_sign"])
 
     def _clear_data(self):
         for sen_pair in self._x_data:
@@ -115,13 +115,10 @@ class ProcessingCorps(object):
 class RuleCorrection(object):
 
     def __init__(self):
-        self._rule_path = "config/rule.json"
-        self._rule_dict = {}
         self._load_rule()
 
     def _load_rule(self):
-        with open(self._rule_path, "r", encoding="utf-8") as f:
-            self._rule_dict = json.load(f)
+        self._rule_dict = conn_rule.rule["replace_text"]
         log.info("[INFO] The rule file is load!")
 
     def __call__(self, output_text):
