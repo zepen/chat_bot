@@ -2,17 +2,15 @@
 """
 调用百度API获取语音识别
 """
-import json
 from aip import AipSpeech
-from utils.connect import Connection, ConnectBaiduAI
+from utils.connect import ConnectionRule, ConnectBaiduAI
 
 
 class SpeechRecognizer(object):
 
     def __init__(self):
-        conn = Connection()
-        with open(conn.config_path + "rule.json", "r", encoding="utf-8") as f:
-            self.voice_reply = json.load(f)["voice_reply"]
+        conn_rule = ConnectionRule()
+        self.voice_reply = conn_rule.rule["voice_reply"]
         self._object_str = "[INFO] This is sr object!"
 
     def __str__(self):

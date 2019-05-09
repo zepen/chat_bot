@@ -2,10 +2,12 @@
 """
 Processing Data
 """
+import re
 import json
 import numpy as np
 from utils.loggings import log
 from utils.load_files import LoadDictionary, LoadCorpus
+from utils.connect import ConnectionRule
 
 
 class ProcessingCorps(object):
@@ -19,10 +21,20 @@ class ProcessingCorps(object):
         print("[INFO] Data size is {}.".format(len(self._x_data)))
         self._clear_data()
         print("[INFO] Data size is {} after clear.".format(len(self._x_data)))
+        conn_rule = ConnectionRule()
+        self._remove_sign = set(conn_rule.rule["remove_sign"])
 
     def _clear_data(self):
         for sen_pair in self._x_data:
             if len(sen_pair[0]) < 2 or len(sen_pair[0]) > 30 or len(sen_pair[1]) < 2 or len(sen_pair[1]) > 30:
+                self._x_data.remove(sen_pair)
+            elif (not re.findall("[0-9]",  "".join(sen_pair[0])) is None) or \
+                    (not re.findall("[0-9]",  "".join(sen_pair[1])) is None):
+                self._x_data.remove(sen_pair)
+            elif (not re.findall("[a-zA-Z]",  "".join(sen_pair[0])) is None) or \
+                    (not re.findall("[a-zA-Z]",  "".join(sen_pair[1])) is None):
+                self._x_data.remove(sen_pair)
+            elif (sen_pair[0] in self._remove_sign) or (sen_pair[1] in self._remove_sign):
                 self._x_data.remove(sen_pair)
 
     def _get_sentences(self, batch_size):

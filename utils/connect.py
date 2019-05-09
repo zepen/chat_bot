@@ -2,6 +2,7 @@
 """
 读取连接信息
 """
+import json
 from configparser import ConfigParser
 
 
@@ -22,6 +23,22 @@ class Connection(object):
     @property
     def config_path(self):
         return self._config_path
+
+
+class ConnectionRule(Connection):
+
+    def __init__(self):
+        super(ConnectionRule, self).__init__()
+        with open(self._config_path + "rule.json", "r", encoding="utf-8") as f:
+            self._rule = json.load(f)
+        self._object_str = "[INFO] This is connection rule object!"
+
+    def __str__(self):
+        return self._object_str
+
+    @property
+    def rule(self):
+        return self._rule
 
 
 class ConnectionTFServing(Connection):
