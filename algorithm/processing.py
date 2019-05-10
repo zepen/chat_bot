@@ -6,7 +6,7 @@ import re
 import time
 import numpy as np
 from utils.loggings import log
-from utils.load_files import LoadDictionary, LoadCorpus
+from utils.load_files import LoadCorpus
 from utils.connect import ConnectionRule
 
 conn_rule = ConnectionRule()
@@ -15,9 +15,6 @@ conn_rule = ConnectionRule()
 class ProcessingCorps(object):
 
     def __init__(self):
-        load_dictionary = LoadDictionary()
-        self._vocab_dict = load_dictionary.vocab_dict
-        self._r_vocab_dict = load_dictionary.r_vocab_dict
         load_corpus = LoadCorpus()
         self._x_data = load_corpus.x_data
         self._remove_sign = set(conn_rule.rule["remove_sign"])
@@ -61,18 +58,11 @@ class ProcessingCorps(object):
         """
         max_sequence_x_length, max_sequence_y_length = None, None
 
-        input_x = [[self._vocab_dict[x]
-                    if self._vocab_dict.get(x) else self._vocab_dict["_UNK_"] for x in s[0]] for s in sen]
+        input_x = [[x for x in s[0]] for s in sen]
 
-        input_y = [[self._vocab_dict["_GO_"]] + (sequence)
-                   for sequence in
-                   [[self._vocab_dict[x] if self._vocab_dict.get(x) else self._vocab_dict["_UNK_"]
-                     for x in s[1]] for s in sen]]
+        input_y = [["_GO_"] + sequence for sequence in [[y for y in s[1]] for s in sen]]
 
-        target_y = [(sequence) + [self._vocab_dict["_EOS_"]]
-                    for sequence in
-                    [[self._vocab_dict[x] if self._vocab_dict.get(x) else self._vocab_dict["_UNK_"]
-                      for x in s[1]] for s in sen]]
+        target_y = [sequence + ["_EOS_"] for sequence in [[x for x in s[1]] for s in sen]]
 
         sequence_x_lengths = [len(seq) for seq in input_x]
         if max_sequence_x_length is None:
@@ -107,14 +97,6 @@ class ProcessingCorps(object):
     def get_batch(self, batch_size, max_sequence_length=None):
         inputs_sentence = self._get_sentences(batch_size)
         return self._padding_zero(inputs_sentence, max_sequence_length=max_sequence_length)
-
-    @property
-    def vocab_dict(self):
-        return self._vocab_dict
-
-    @property
-    def r_vocab_dict(self):
-        return self._r_vocab_dict
 
 
 class RuleCorrection(object):

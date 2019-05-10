@@ -30,7 +30,8 @@ config = tf.ConfigProto(
 )
 
 processing_corpus = ProcessingCorps()
-
+encoder_inputs, decoder_inputs, decoder_target, encoder_inputs_length, decoder_targets_length \
+    = processing_corpus.get_batch(mc.batch_size)
 
 def train_model():
     seq2seq_model_train = Seq2SeqModel(
@@ -38,9 +39,7 @@ def train_model():
         batch_size=mc.batch_size,
         beam_search=mc.beam_search,
         beam_size=mc.beam_size,
-        mode="train",
-        vocab_dict=processing_corpus.vocab_dict,
-        r_vocab_dict=processing_corpus.r_vocab_dict,
+        mode="train"
     )
     saver = tf.train.Saver()
     with tf.Session(config=config) as sess:
@@ -83,8 +82,6 @@ def main(_):
         beam_size=mc.beam_size,
         decode_mode="beam_search",
         mode="decode",
-        vocab_dict=processing_corpus.vocab_dict,
-        r_vocab_dict=processing_corpus.r_vocab_dict,
     )
     with tf.Session() as sess:
         init = tf.global_variables_initializer()

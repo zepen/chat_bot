@@ -37,12 +37,18 @@ class Seq2SeqModel(object):
                 self._batch_size = tf.placeholder(shape=[None], dtype=tf.int32, name='batch_size')
                 self._max_len_index = tf.argmax(self._decoder_targets_length, name="max_len_index")
 
+        with tf.name_scope("map_sequence"):
+            table = tf.contrib.lookup.index_table_from_file(
+                vocabulary_file="./dictionary/vocab_dict.txt", num_oov_buckets=0, default_value=0)
+            self._encoder_inputs_ids = table.lookup(self._encoder_inputs)
+            self._decoder_inputs_ids = table.lookup(self._decoder_inputs)
+
         with tf.device('/cpu:0'):
             with tf.name_scope("embedding"):
                 embeddings = tf.Variable(
                     tf.random_uniform([self._vocab_size + 2, hp.input_embedding_size], -1.0, 1.0), dtype=tf.float32)
-                self._encoder_inputs_embedded = tf.nn.embedding_lookup(embeddings, self._encoder_inputs)
-                self._decoder_inputs_embedded = tf.nn.embedding_lookup(embeddings, self._decoder_inputs)
+                self._encoder_inputs_embedded = tf.nn.embedding_lookup(embeddings, self._encoder_inputs_ids)
+                self._decoder_inputs_embedded = tf.nn.embedding_lookup(embeddings, self._decoder_inputs_ids)
 
         with tf.device(set_device):
             with tf.name_scope("encoder"):
