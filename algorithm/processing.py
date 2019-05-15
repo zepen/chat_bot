@@ -47,11 +47,10 @@ class ProcessingCorps(object):
         """
         return [self._x_data[np.random.randint(0, len(self._x_data) - 1)] for _ in range(batch_size)]
 
-    def _padding_zero(self, sen, max_sequence_length=None):
+    def _padding_zero(self, sen):
         """ Get each batch samples
 
         :param sen: inputs sentence
-        :param max_sequence_length:
         :return: encoder_inputs, decoder_inputs, decoder_targets,
                   Type: np.array
                   Shape: (batch_size, time_steps, embed_size)
@@ -72,9 +71,12 @@ class ProcessingCorps(object):
         if max_sequence_y_length is None:
             max_sequence_y_length = max(sequence_y_lengths)
 
-        inputs_x_batch_major = np.zeros(shape=[len(input_x), max_sequence_x_length], dtype=np.int32)
-        inputs_y_batch_major = np.zeros(shape=[len(input_y), max_sequence_y_length], dtype=np.int32)
-        target_y_batch_major = np.zeros(shape=[len(target_y), max_sequence_y_length], dtype=np.int32)
+        # noinspection PyTypeChecker
+        inputs_x_batch_major = np.full((len(input_x), max_sequence_x_length), "_PAD_",  dtype='U5')
+        # noinspection PyTypeChecker
+        inputs_y_batch_major = np.full((len(input_y), max_sequence_y_length), "_PAD_", dtype='U5')
+        # noinspection PyTypeChecker
+        target_y_batch_major = np.full((len(target_y), max_sequence_y_length), "_PAD_", dtype='U5')
 
         for i, seq in enumerate(input_x):
             for j, element in enumerate(seq):
@@ -94,9 +96,9 @@ class ProcessingCorps(object):
 
         return x, y, y_, sequence_x_lengths, sequence_y_lengths
 
-    def get_batch(self, batch_size, max_sequence_length=None):
+    def get_batch(self, batch_size):
         inputs_sentence = self._get_sentences(batch_size)
-        return self._padding_zero(inputs_sentence, max_sequence_length=max_sequence_length)
+        return self._padding_zero(inputs_sentence)
 
 
 class RuleCorrection(object):

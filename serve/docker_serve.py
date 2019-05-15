@@ -41,10 +41,11 @@ def docker_run(docker_file_path):
     docker_build(docker_file_path)
     os.chdir("..")
     path = os.getcwd().replace("\\", "/").replace(":", "").lower()
-    v_1 = "-v /" + path + "/model/:/models/chat_bot "
+    mount_model = "--mount type=bind,source=/" + path + "/model/,target=/models/chat_bot"
+    mount_dict = "--mount type=bind,source=/" + path + "/dictionary/vocab_dict.txt,target=/dictionary/vocab_dict.txt"
     v_2 = "-v /" + path + "/data/:/var/lib/neo4j/import"
     e = "-e MODEL_NAME=chat_bot"
-    DOCKER_RUN_TFS += (v_1 + e + " tensorflow/serving")
+    DOCKER_RUN_TFS += " ".join([mount_model, mount_dict, e, "tensorflow/serving"])
     DOCKER_RUN_NEO4J += (v_2 + " neo4j:latest")
     print("[tensorflow-serving docker run command]: {}".format(DOCKER_RUN_TFS))
     print("[neo4j docker run command]: {}".format(DOCKER_RUN_NEO4J))
@@ -66,17 +67,13 @@ def get_predict_result(x):
         log.error("[ERROR] " + str(e))
 
 
-def predict_func(input_text, vocab_dict, r_vocab_dict, m_config, rule_correction):
+def predict_func(input_text):
     """  解码预测
 
     :param input_text 输出文本
-    :param vocab_dict: 词表
-    :param r_vocab_dict: 反转词表
-    :param m_config 配置对象
-    :param rule_correction 规则修正对象
     :return: str
     """
-    x = [vocab_dict[x] if vocab_dict.get(x) else vocab_dict["_UNK_"] for x in list(input_text)]
+    x = list(input_text)
     data = {
         "instances": [
             {
@@ -86,8 +83,5 @@ def predict_func(input_text, vocab_dict, r_vocab_dict, m_config, rule_correction
             },
         ]
     }
-    predict_res = get_predict_result(data)["predictions"][0]
-    output_text = rule_correction(
-        "".join([r_vocab_dict[y] for y in predict_res if r_vocab_dict[y] != "_EOS_"])
-    )
-    return m_config.replace_sentence if output_text is None else output_text
+    predict_res = get_predict_result(data)["predictions"]
+    return "".join([w for w in predict_res[0] if w != '_EOS_'])

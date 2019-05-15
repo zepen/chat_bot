@@ -10,21 +10,40 @@ os.chdir("..")
 
 
 def test_load_ckpt_model():
-    saver = tf.train.import_meta_graph("logs/s2s.ckpt-0.meta")
+    saver = tf.train.import_meta_graph("logs/s2s.ckpt.meta")
     with tf.Session() as sess:
-        saver.restore(sess, tf.train.latest_checkpoint("./logs"))
+        tf.tables_initializer().run()
+        saver.restore(sess, tf.train.latest_checkpoint("logs/"))
         for tensor in tf.get_default_graph().as_graph_def().node:
             print(tensor.name)
         print(sess.graph.get_tensor_by_name("inputs/encoder_inputs:0"))
         print(sess.graph.get_tensor_by_name("inputs/encoder_inputs_length:0"))
         print(sess.graph.get_tensor_by_name("inputs/batch_size:0"))
-        print(sess.graph.get_tensor_by_name("predict/decoder/transpose_1:0"))
-        print("Decode Result: {}".format(
+        print(sess.graph.get_tensor_by_name("predict/decoder/transpose:0"))
+        print(sess.graph.get_tensor_by_name("predict/prediction/ReduceJoin:0"))
+        print("Look_ids: {}".format(
+            sess.run("map_sequence/hash_table_Lookup:0", feed_dict={
+                "inputs/encoder_inputs:0": [list("今天天气很好!")]
+            })
+        ))
+        print("Embeddings_vector: {}".format(
+            sess.run("embedding/embedding_lookup:0", feed_dict={
+                "inputs/encoder_inputs:0": [list("今天天气很好!")]
+            })
+        ))
+        print("Predict_sequence: {}".format(
             sess.run("predict/decoder/transpose_1:0", feed_dict={
-                "inputs/encoder_inputs:0": [[1, 2, 3, 0]],
-                "inputs/encoder_inputs_length:0": [4],
+                "inputs/encoder_inputs:0": [list("今天天气很好!")],
+                "inputs/encoder_inputs_length:0": [7],
                 "inputs/batch_size:0": [1]
             })
+        ))
+        print("Decode Result: {}".format(
+            sess.run("predict/prediction/ReduceJoin:0", feed_dict={
+                "inputs/encoder_inputs:0": [list("今天天气很好!")],
+                "inputs/encoder_inputs_length:0": [7],
+                "inputs/batch_size:0": [1]
+            }).decode("utf-8")
         ))
 
 
@@ -37,10 +56,15 @@ def test_load_pb_model():
         print(sess.graph.get_tensor_by_name("inputs/encoder_inputs_length:0"))
         print(sess.graph.get_tensor_by_name("inputs/batch_size:0"))
         print(sess.graph.get_tensor_by_name("predict/decoder/transpose:0"))
-        print("Decode Result: {}".format(
-            sess.run("predict/decoder/transpose:0", feed_dict={
-                "inputs/encoder_inputs:0": [[1, 2, 30, 0]],
-                "inputs/encoder_inputs_length:0": [4],
-                "inputs/batch_size:0": [1]
+        print("Look_ids: {}".format(
+            sess.run("map_sequence/hash_table_Lookup:0", feed_dict={
+                "inputs/encoder_inputs:0": [list("今天天气很好!")]
             })
+        ))
+        print("Decode Result: {}".format(
+            sess.run("predict/prediction/ReduceJoin:0", feed_dict={
+                "inputs/encoder_inputs:0": [list("今天天气很好!")],
+                "inputs/encoder_inputs_length:0": [7],
+                "inputs/batch_size:0": [1]
+            }).decode("utf-8")
         ))

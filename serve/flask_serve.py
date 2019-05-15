@@ -17,10 +17,8 @@ from .docker_serve import predict_func
 index = Blueprint('index', __name__)
 api = Blueprint('api', __name__)
 
-load_files = LoadDictionary()
-vd = load_files.vocab_dict
-rvd = load_files.r_vocab_dict
-vocab_size = len(vd)
+load_dict = LoadDictionary()
+vocab_size = load_dict.vocab_size
 m_config = ModelConfig()
 ltp = Ltp()
 rule_c = RuleCorrection()
@@ -50,7 +48,7 @@ def response_info():
             request_text = request_text.replace("\n", "")
             input_text = json.loads(request_text)["content"]
             # ltp.get_entity(input_text)
-            return predict_func(input_text, vd, rvd, m_config, rule_c)
+            return predict_func(input_text)
         else:
             return "What?"
     except Exception as e:
