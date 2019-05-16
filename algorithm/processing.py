@@ -2,14 +2,9 @@
 """
 Processing Data
 """
-import re
 import time
 import numpy as np
-from utils.loggings import log
 from utils.load_files import LoadCorpus
-from utils.connect import ConnectionRule
-
-conn_rule = ConnectionRule()
 
 
 class ProcessingCorps(object):
@@ -17,27 +12,8 @@ class ProcessingCorps(object):
     def __init__(self):
         load_corpus = LoadCorpus()
         self._x_data = load_corpus.x_data
-        self._remove_sign = set(conn_rule.rule["remove_sign"])
         print("[INFO] Data size is {}.".format(len(self._x_data)))
-        self._clear_data()
         time.sleep(10)
-        print("[INFO] Data size is {} after clear.".format(len(self._x_data)))
-
-    def _clear_data(self):
-        for sen_pair in self._x_data:
-            sentence_a = "".join(sen_pair[0])
-            sentence_b = "".join(sen_pair[1])
-            all_char = set(list(sen_pair[0]) + list(sen_pair[1]))
-            if (len(sentence_a) < 2) or (len(sentence_a) > 30) or (len(sentence_b) < 2) or (len(sentence_b) > 30):
-                self._x_data.remove(sen_pair)
-            elif len(re.findall("[0-9]",  sentence_a)) or len(re.findall("[0-9]",  sentence_b)):
-                self._x_data.remove(sen_pair)
-            elif len(re.findall("[a-zA-Z]",  sentence_a)) or len(re.findall("[a-zA-Z]",  sentence_b)):
-                self._x_data.remove(sen_pair)
-            elif len(self._remove_sign.intersection(all_char)):
-                self._x_data.remove(sen_pair)
-            else:
-                continue
 
     def _get_sentences(self, batch_size):
         """ Get batch sentence from data
@@ -99,24 +75,3 @@ class ProcessingCorps(object):
     def get_batch(self, batch_size):
         inputs_sentence = self._get_sentences(batch_size)
         return self._padding_zero(inputs_sentence)
-
-
-class RuleCorrection(object):
-
-    def __init__(self):
-        self._load_rule()
-
-    def _load_rule(self):
-        self._rule_dict = conn_rule.rule["replace_text"]
-        log.info("[INFO] The rule file is load!")
-
-    def __call__(self, output_text):
-        return self.rule_correction_fun(output_text)
-
-    def rule_correction_fun(self, output_text: str) -> str:
-        """  对模型预测文本结果进行校正
-        :param output_text: 预测文本
-        :return: str
-        """
-        return self._rule_dict[output_text] \
-            if self._rule_dict.get(output_text) else output_text
