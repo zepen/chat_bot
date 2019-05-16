@@ -7,10 +7,9 @@ import json
 from flask.app import request, Response
 from flask.blueprints import Blueprint
 from flask.templating import render_template
-from algorithm.processing import RuleCorrection
 from algorithm.named_entity_recognizer import Ltp
 from utils.loggings import log
-from utils.load_files import LoadDictionary
+from utils.load_files import LoadDictionary, RuleCorrection
 from config.config import ModelConfig
 from .docker_serve import predict_func
 
