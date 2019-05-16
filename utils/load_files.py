@@ -15,7 +15,7 @@ class LoadCorpus(LoadFiles):
 
     def __init__(self):
         super(LoadCorpus, self).__init__()
-        self._corpus_path = "./data/chat_corpus2.txt"
+        self._corpus_path = "./data/chat_corpus.txt"
         self._load_corpus()
 
     def _load_corpus(self):

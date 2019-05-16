@@ -16,6 +16,8 @@ print("URL {}".format(conn_tf_serving.url))
 
 
 def test_get_tf_serving():
-    print("[Response]: {}".format(
-        predict_func("今天天气很好!"))
-    )
+    # 请求1000次，查看返回结果
+    for _ in range(1000):
+        print("[Response]: {}".format(
+            predict_func("今天天气很好!"))
+        )

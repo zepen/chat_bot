@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-测试加载模型
+测试加载模型文件
 """
 import os
 import tensorflow as tf
@@ -19,8 +19,8 @@ def test_load_ckpt_model():
         print(sess.graph.get_tensor_by_name("inputs/encoder_inputs:0"))
         print(sess.graph.get_tensor_by_name("inputs/encoder_inputs_length:0"))
         print(sess.graph.get_tensor_by_name("inputs/batch_size:0"))
-        print(sess.graph.get_tensor_by_name("predict/decoder/transpose:0"))
-        print(sess.graph.get_tensor_by_name("predict/prediction/ReduceJoin:0"))
+        print(sess.graph.get_tensor_by_name("predict/decoder/transpose_1:0"))
+        print(sess.graph.get_tensor_by_name("predict/prediction/index_to_string_Lookup:0"))
         print("Look_ids: {}".format(
             sess.run("map_sequence/hash_table_Lookup:0", feed_dict={
                 "inputs/encoder_inputs:0": [list("今天天气很好!")]
@@ -39,11 +39,12 @@ def test_load_ckpt_model():
             })
         ))
         print("Decode Result: {}".format(
-            sess.run("predict/prediction/ReduceJoin:0", feed_dict={
+            [w.decode("utf-8") for w in
+             sess.run("predict/prediction/index_to_string_Lookup:0", feed_dict={
                 "inputs/encoder_inputs:0": [list("今天天气很好!")],
                 "inputs/encoder_inputs_length:0": [7],
                 "inputs/batch_size:0": [1]
-            }).decode("utf-8")
+            })[0]]
         ))
 
 
@@ -55,16 +56,25 @@ def test_load_pb_model():
         print(sess.graph.get_tensor_by_name("inputs/encoder_inputs:0"))
         print(sess.graph.get_tensor_by_name("inputs/encoder_inputs_length:0"))
         print(sess.graph.get_tensor_by_name("inputs/batch_size:0"))
-        print(sess.graph.get_tensor_by_name("predict/decoder/transpose:0"))
+        print(sess.graph.get_tensor_by_name("predict/decoder/transpose_1:0"))
+        print(sess.graph.get_tensor_by_name("predict/prediction/index_to_string_Lookup:0"))
         print("Look_ids: {}".format(
             sess.run("map_sequence/hash_table_Lookup:0", feed_dict={
                 "inputs/encoder_inputs:0": [list("今天天气很好!")]
             })
         ))
-        print("Decode Result: {}".format(
-            sess.run("predict/prediction/ReduceJoin:0", feed_dict={
+        print("Predict_sequence: {}".format(
+            sess.run("predict/decoder/transpose_1:0", feed_dict={
                 "inputs/encoder_inputs:0": [list("今天天气很好!")],
                 "inputs/encoder_inputs_length:0": [7],
                 "inputs/batch_size:0": [1]
-            }).decode("utf-8")
+            })
+        ))
+        print("Decode Result: {}".format(
+            [w.decode("utf-8") for w in
+             sess.run("predict/prediction/index_to_string_Lookup:0", feed_dict={
+                "inputs/encoder_inputs:0": [list("今天天气很好!")],
+                "inputs/encoder_inputs_length:0": [7],
+                "inputs/batch_size:0": [1]
+             })[0]]
         ))

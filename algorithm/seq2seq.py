@@ -92,9 +92,13 @@ class Seq2SeqModel(object):
                         )
 
                 with tf.variable_scope("", reuse=tf.AUTO_REUSE):
+                    if kwargs["mode"] == "train":
+                        self._decoder_keep_prob = hp.decoder_keep_prob
+                    elif kwargs["mode"] == "decode":
+                        self._decoder_keep_prob = 1.00
                     decoder_cell = tf.nn.rnn_cell.LSTMCell(num_units=2 * hp.decoder_hidden_units)
                     decoder_cell = tf.nn.rnn_cell.DropoutWrapper(
-                        decoder_cell, output_keep_prob=hp.decoder_keep_prob)
+                        decoder_cell, output_keep_prob=self._decoder_keep_prob)
                     decoder_cell = tf.contrib.seq2seq.AttentionWrapper(
                         cell=decoder_cell,
                         attention_mechanism=attention_mechanism,

@@ -16,5 +16,5 @@ class ModelConfig(object):
     encoder_hidden_units = 64
     decoder_hidden_units = 64
     layer_num = 3
-    decoder_keep_prob = 0.75
+    decoder_keep_prob = 0.5
     max_decode_len = 30
