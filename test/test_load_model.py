@@ -50,7 +50,7 @@ def test_load_ckpt_model():
 
 def test_load_pb_model():
     with tf.Session(graph=tf.Graph()) as sess:
-        tf.saved_model.loader.load(sess, [tf.saved_model.tag_constants.SERVING],  "model/002/")
+        tf.saved_model.loader.load(sess, [tf.saved_model.tag_constants.SERVING],  "model/001/")
         for tensor in tf.get_default_graph().as_graph_def().node:
             print(tensor.name)
         print(sess.graph.get_tensor_by_name("inputs/encoder_inputs:0"))

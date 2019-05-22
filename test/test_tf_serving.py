@@ -4,9 +4,9 @@
 """
 import os
 from config.config import ModelConfig
-from utils.load_files import LoadDictionary
 os.chdir("..")
-from algorithm.processing import RuleCorrection
+
+from utils.load_files import LoadDictionary, RuleCorrection
 from serve.docker_serve import predict_func, conn_tf_serving
 
 load_dict = LoadDictionary()
