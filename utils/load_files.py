@@ -36,8 +36,8 @@ class LoadCorpus(LoadFiles):
                      ((len(sentence_a) >= 2) and (len(sentence_a) <= 30))
             rule_2 = (re.search("[a-zA-Z]",  sentence_q) is None) and (re.search("[a-zA-Z]",  sentence_a) is None)
             rule_3 = (re.search("[0-9]", sentence_q)is None) and (re.search("[0-9]", sentence_a) is None)
-            rule_4 = len(self._remove_sign.intersection(set(list(sentence_q) + list(sentence_q)))) == 0
-            if rule_1 and rule_2 and rule_3 and rule_4:
+            rule_4 = len(self._remove_sign.intersection(set(list(sentence_q) + list(sentence_a)))) == 0
+            if all([rule_1, rule_2, rule_3, rule_4]):
                 self._x_data.append((sentence_q, sentence_a))
 
     @property
