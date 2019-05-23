@@ -6,26 +6,24 @@
 #### 执行说明
 * step-1 训练模型，语料在corpus文件下，语料可替换，格式要与示例语料相同
 
+ ```bash
+python run_train.py --model_version 001 --train_steps_num  # 指定模型版本和迭代轮次
  ```
-python run_train.py --model_version 001  # 指定模型版本
- ```
 
-* step-2 启动 tensorflow_serving docker 服务
+* step-2 启动机器人，访问 http://127.0.0.1:5000 测试界面
 
-```bash
-python run_tf_serving.py
-```
-
-* step-3 启动对话机器人界面
   * 测试启动
+  
    ```bash
    python run_robot.py
    ```
+  
   * 正式启动
+  
   ```bash
   gunicorn -w 4 -b 0.0.0.0:5000 run_robot:app  # 适用于linux系统下启动，win下会报错ModuleNotFoundError: No module named 'pwd'
   ```
-
+  
 #### 部署机器人到微信
 
 ```bash
