@@ -8,7 +8,7 @@ import tensorflow as tf
 class Seq2SeqModel(object):
 
     def __init__(self, hp, **kwargs):
-        """ seq2seq 模型用于生成对话
+        """ seq2seq 模型用于生成回复
 
         :param hp: 模型超参数
         """
@@ -185,10 +185,10 @@ class Seq2SeqModel(object):
                 )
                 if self._beam_search and kwargs["mode"] == "decode" and kwargs["decode_mode"] == "beam_search":
                     with tf.name_scope("prediction"):
-                        self._decoder_prediction = tf.transpose(decoder_outputs.predicted_ids, perm=[0, 2, 1])
-                        self._generate_sentence = tf.reduce_join(
-                            self._index2string_table.lookup(
-                                tf.cast(self._decoder_prediction, dtype=tf.int64)
+                        self._decoder_prediction = self._index2string_table.lookup(
+                            tf.cast(
+                                tf.transpose(decoder_outputs.predicted_ids, perm=[0, 2, 1]),
+                                dtype=tf.int64
                             )
                         )
                 else:
@@ -227,10 +227,6 @@ class Seq2SeqModel(object):
     @property
     def decoder_prediction(self):
         return self._decoder_prediction
-
-    @property
-    def generate_sentence(self):
-        return self._generate_sentence
 
     @property
     def batch_size(self):

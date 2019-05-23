@@ -9,9 +9,9 @@ from utils.load_files import LoadCorpus
 
 class ProcessingCorps(object):
 
-    def __init__(self):
+    def __init__(self, start_point=0, end_point=None):
         load_corpus = LoadCorpus()
-        self._x_data = load_corpus.x_data
+        self._x_data = load_corpus.x_data[start_point:end_point]
         print("[INFO] Data size is {}.".format(len(self._x_data)))
         time.sleep(10)
 

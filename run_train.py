@@ -13,7 +13,7 @@ tf.app.flags.DEFINE_string('device', 'cpu', "设定训练设备")
 tf.app.flags.DEFINE_integer('cpu_num', 8, "cpu数目")
 tf.app.flags.DEFINE_integer('train_steps_num', 200, "设置迭代次数")
 tf.app.flags.DEFINE_integer('batch_size', 32, "训练批次大小")
-tf.app.flags.DEFINE_string("model_version", "004", "模型版本")
+tf.app.flags.DEFINE_string("model_version", "001", "模型版本")
 FLAGS = tf.app.flags.FLAGS
 
 mc = ModelConfig()
@@ -31,7 +31,7 @@ config = tf.ConfigProto(
 )
 
 load_dict = LoadDictionary()
-processing_corpus = ProcessingCorps()
+processing_corpus = ProcessingCorps(start_point=10000, end_point=20000)
 
 
 def train_model():

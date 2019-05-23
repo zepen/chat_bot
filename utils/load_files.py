@@ -98,7 +98,6 @@ class RuleCorrection(object):
 
         :return: str
         """
-        replace_content = self._replace_content["replace_content"]
-        replace_content_len = len(replace_content)
+        replace_content_len = len(self._replace_content)
         random_index = np.random.randint(0, replace_content_len)
-        return replace_content[random_index]
+        return self._replace_content[random_index]

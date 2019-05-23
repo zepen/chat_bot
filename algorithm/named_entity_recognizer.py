@@ -48,4 +48,6 @@ class Ltp(NerModel):
         words = self._seg.segment(sentence)
         pos = self._pos.postag(words)
         ner = self._recognizer.recognize(words, pos)
-        return [v for v in zip(words, ner)]
+        entity = [w for w, s in zip(words, ner) if s != 'O']
+        if entity:
+            return "".join(entity) if len(entity) > 1 else entity[0]
