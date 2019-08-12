@@ -3,7 +3,7 @@
 测试ltp模型
 """
 import os
-from algorithm.named_entity_recognizer import Ltp
+from algorithm.ner import Ltp
 
 os.chdir("..")
 

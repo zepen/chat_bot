@@ -2,6 +2,7 @@
 """
 用语言模型来评估回复结果
 """
+import kenlm
 from aip import AipNlp
 from utils.connect import ConnectBaiduAI
 

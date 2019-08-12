@@ -7,19 +7,16 @@ import json
 from flask.app import request, Response
 from flask.blueprints import Blueprint
 from flask.templating import render_template
-from algorithm.named_entity_recognizer import Ltp
+from algorithm.ner import Ltp
 from algorithm.language_model import BaiduDnnLM
 from utils.loggings import log
-from utils.load_files import LoadDictionary, RuleCorrection
-from config.config import ModelConfig
+from utils.load_files import RuleCorrection
 from .docker_serve import predict_func
 
 index = Blueprint('index', __name__)
 api = Blueprint('api', __name__)
 
-load_dict = LoadDictionary()
-vocab_size = load_dict.vocab_size
-m_config = ModelConfig()
+
 ltp = Ltp()
 baidu_dnn_lm = BaiduDnnLM()
 rule_c = RuleCorrection()
