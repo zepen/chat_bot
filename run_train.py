@@ -73,6 +73,7 @@ def train_model():
         seq2seq_train.load_model(sess)
         tf.logging.info("Please open tensorboard to Supervisor train processing...")
         step = 1
+        cost_time = 0
         while True:
             try:
                 e_inputs, d_inputs, d_target, e_inputs_length, d_targets_length = get_batch_()
@@ -91,15 +92,17 @@ def train_model():
                     [seq2seq_train.train_op, merge_all, seq2seq_train.loss],
                     feed_dict=feed_dict
                 )
+                end_time = time.time()
+                cost_time += (end_time - start_time)
                 writer.add_summary(summary, step)
                 if step % FLAGS.save_step == 0:
-                    end_time = time.time()
                     if not os.path.exists("logs/model/"):
                         os.mkdir("logs/model/")
                     seq2seq_train.save_model(sess, save_path="logs/model/s2s.ckpt")
                     tf.logging.info("[step is {}, {} step/sec]".format(
-                        step, round(FLAGS.save_step / (end_time - start_time)), 4)
+                        step, round(FLAGS.save_step / cost_time, 4))
                     )
+                    cost_time = 0
                 step += 1
             except tf.errors.OutOfRangeError:
                 tf.logging.info("All epoch is completed!")
