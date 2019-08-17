@@ -7,10 +7,12 @@ import time
 import tensorflow as tf
 from multiprocessing import cpu_count
 from algorithm.seq2seq import HyperParameters, Seq2Seq
+from joblib import dump
+
 
 tf.flags.DEFINE_string('device', 'cpu', "设定训练设备")
 tf.flags.DEFINE_integer('gpu_no', 0, "设置使用GPU编号")
-tf.flags.DEFINE_float("learning_rate", 0.01, "学习速率")
+tf.flags.DEFINE_float("learning_rate", 0.002, "初始学习速率")
 tf.flags.DEFINE_float("clip_norm", 5, "梯度裁剪率")
 tf.flags.DEFINE_integer('epoch', 200, "训练迭代轮数")
 tf.flags.DEFINE_integer('embedding_size', 128, "嵌入层节点数目")
@@ -22,9 +24,11 @@ tf.flags.DEFINE_integer('layer_num', 3, "隐藏层数目")
 tf.flags.DEFINE_integer('beam_search', 0, "是否启用beam_search")
 tf.flags.DEFINE_integer('beam_size', 3, "beam_search大小")
 tf.flags.DEFINE_integer('batch_size', 32, "训练批次大小")
+tf.flags.DEFINE_integer("decay_steps", 100, "多少步学习速率衰减一次")
+tf.flags.DEFINE_float("decay_rate", 0.95, "学习速率衰减率")
 tf.flags.DEFINE_string("mode", "train", "图模式")
 tf.flags.DEFINE_integer("max_decode_len", 100, "最大解码长度")
-tf.flags.DEFINE_integer("save_step", 1000, "间隔多少step保存一次模型")
+tf.flags.DEFINE_integer("save_step", 100, "间隔多少step保存一次模型")
 tf.flags.DEFINE_string("model_version", "001", "模型版本")
 
 FLAGS = tf.flags.FLAGS
@@ -40,6 +44,8 @@ hp = HyperParameters()
 hp.device = FLAGS.device
 hp.gpu_no = FLAGS.gpu_no
 hp.lr = FLAGS.learning_rate
+hp.decay_steps = FLAGS.decay_steps
+hp.decay_rate = FLAGS.decay_rate
 hp.clip_norm = FLAGS.clip_norm
 hp.embedding_size = FLAGS.embedding_size
 hp.encoder_hidden_units = FLAGS.encoder_hidden_units
@@ -51,6 +57,10 @@ hp.beam_search = FLAGS.beam_search
 hp.beam_size = FLAGS.beam_size
 hp.mode = FLAGS.mode
 hp.max_decode_len = FLAGS.max_decode_len
+
+# 持久化超参数到文件
+with open("logs/hyper_parameters.pkl", "wb") as f:
+    dump(hp, f)
 
 
 def train_model():
@@ -99,7 +109,7 @@ def train_model():
                     if not os.path.exists("logs/model/"):
                         os.mkdir("logs/model/")
                     seq2seq_train.save_model(sess, save_path="logs/model/s2s.ckpt")
-                    tf.logging.info("[step is {}, {} step/sec]".format(
+                    tf.logging.info("[step: {}, {} step/sec]".format(
                         step, round(FLAGS.save_step / cost_time, 4))
                     )
                     cost_time = 0

@@ -4,20 +4,18 @@
 """
 import os
 import tensorflow as tf
-from algorithm.seq2seq import HyperParameters, Seq2Seq
+from algorithm.seq2seq import Seq2Seq
+from joblib import load
 # from tensorflow.contrib.seq2seq.python.ops import beam_search_ops
 
 os.chdir("..")
 
+# 加载训练好模型的超参数
+with open("logs/hyper_parameters.pkl", "rb") as f:
+    hp = load(f)
 
-hp = HyperParameters()
 hp.device = "cpu"
 hp.gpu_no = "0"
-hp.embedding_size = 32
-hp.encoder_hidden_units = 32
-hp.encoder_keep_prob = 1.0
-hp.decoder_hidden_units = 32
-hp.decoder_keep_prob = 1.0
 hp.layer_num = 3
 hp.beam_search = 0
 hp.beam_size = 5
@@ -30,8 +28,8 @@ def test_load_ckpt_model():
     with tf.Session() as sess:
         tf.tables_initializer().run()
         seq2seq_predict.load_model(sess)
-        for tensor in tf.get_default_graph().as_graph_def().node:
-            print(tensor.name)
+        # for tensor in tf.get_default_graph().as_graph_def().node:
+        #     print(tensor.name)
         print(sess.graph.get_tensor_by_name("inputs/inputs_sentence:0"))
         print(sess.graph.get_tensor_by_name("inputs/encoder_inputs_length:0"))
         print(sess.graph.get_tensor_by_name("inputs/batch_size:0"))
@@ -57,7 +55,7 @@ def test_load_ckpt_model():
         ))
         sentence = sess.run(
             "predict/prediction/index_to_string_Lookup:0", feed_dict={
-                "inputs/inputs_sentence:0": [list("我还喜欢她,怎么办")],
+                "inputs/inputs_sentence:0": [list("我心情不好了")],
                 "inputs/encoder_inputs_length:0": [7],
                 "inputs/batch_size:0": [1]}
         )
@@ -67,8 +65,8 @@ def test_load_ckpt_model():
 def test_load_pb_model():
     with tf.Session(graph=tf.Graph()) as sess:
         tf.saved_model.loader.load(sess, [tf.saved_model.tag_constants.SERVING],  "model/001/")
-        for tensor in tf.get_default_graph().as_graph_def().node:
-            print(tensor.name)
+        # for tensor in tf.get_default_graph().as_graph_def().node:
+        #     print(tensor.name)
         print(sess.graph.get_tensor_by_name("inputs/encoder_inputs:0"))
         print(sess.graph.get_tensor_by_name("inputs/encoder_inputs_length:0"))
         print(sess.graph.get_tensor_by_name("inputs/batch_size:0"))
@@ -86,11 +84,10 @@ def test_load_pb_model():
                 "inputs/batch_size:0": [1]
             })
         ))
-        print("Decode Result: {}".format(
-            [w.decode("utf-8") for w in
-             sess.run("predict/prediction/index_to_string_Lookup:0", feed_dict={
-                "inputs/inputs_sentence:0": [list("今天天气很好!")],
+        sentence = sess.run(
+            "predict/prediction/index_to_string_Lookup:0", feed_dict={
+                "inputs/inputs_sentence:0": [list("我还喜欢她,怎么办")],
                 "inputs/encoder_inputs_length:0": [7],
-                "inputs/batch_size:0": [1]
-             })[0]]
-        ))
+                "inputs/batch_size:0": [1]}
+        )
+        print("Decode Result: {}".format("".join([w.decode("utf-8") for w in sentence[0]])))

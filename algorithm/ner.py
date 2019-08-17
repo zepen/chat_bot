@@ -10,7 +10,7 @@ class NerModel(object):
     def __init__(self):
         self._object_str = "[INFO] This is ner object!"
 
-    def __str__(self):
+    def __repr__(self):
         return self._object_str
 
 
@@ -20,7 +20,7 @@ class BirLstmCrf(NerModel):
         super().__init__()
         self._object_str = "[INFO] This is bir_lstm_crf object!"
 
-    def __str__(self):
+    def __repr__(self):
         return self._object_str
 
 
@@ -36,7 +36,7 @@ class Ltp(NerModel):
         self._object_str = "[INFO] This is ltp object!"
         print("[INFO] All model is load!")
 
-    def __str__(self):
+    def __repr__(self):
         return self._object_str
 
     def _load_model(self):

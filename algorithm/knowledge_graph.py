@@ -14,7 +14,7 @@ class KnowledgeGraph(object):
         conn_neo4j = ConnectionNeo4j()
         self._graph = Graph(host=conn_neo4j.ip, auth=(conn_neo4j.username, conn_neo4j.password))
 
-    def __str__(self):
+    def __repr__(self):
         self._object = "[INFO] The neo4j version is {}.".format(py2neo.__version__)
 
     def load_file(self, cypher):

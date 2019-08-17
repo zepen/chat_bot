@@ -13,7 +13,7 @@ class SpeechRecognizer(object):
         self.voice_reply = conn_rule.rule["voice_reply"]
         self._object_str = "[INFO] This is sr object!"
 
-    def __str__(self):
+    def __repr__(self):
         return self._object_str
 
 

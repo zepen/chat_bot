@@ -41,7 +41,7 @@ def generate_response(input_text):
     response = predict_func(input_text)
     print(response)
     if len(response):
-        response_ppl = baidu_dnn_lm(text=response)['ppl']
+        response_ppl = baidu_dnn_lm.get_ppl(response)
         print(response_ppl)
         if response_ppl < 500:
             return rule_c.replace_name(response)
@@ -76,7 +76,7 @@ def response_info():
             entity = ltp.get_entity(input_text)
             if entity:
                 return information_retrieval(entity)
-            input_text_ppl = baidu_dnn_lm(text=input_text)['ppl']
+            input_text_ppl = baidu_dnn_lm.get_ppl(input_text)
             if input_text_ppl < 500:
                 return generate_response(input_text)
             else:

@@ -15,6 +15,8 @@ class HyperParameters(object):
     epoch = 0
     batch_size = 0
     clip_norm = 0
+    decay_steps = 0
+    decay_rate = 0.0
     embedding_size = 0
     encoder_hidden_units = 0
     encoder_keep_prob = 0.0
@@ -39,6 +41,9 @@ class DataSet(object):
             vocabulary_file=self.data_path + "vocab_dict.txt")
         self._text_line = tf.data.TextLineDataset(self.data_path + "train_corpus.txt")
         self._iterator = None
+
+    def __repr__(self):
+        return "<This is DataSet>"
 
     def _process_func(self, string):
         """  预处理函数
@@ -101,6 +106,8 @@ class Seq2Seq(object):
         self._beam_search = hp.beam_search
         self._beam_size = hp.beam_size
         self._mode = hp.mode
+        self._decay_steps = hp.decay_steps
+        self._decay_rate = hp.decay_rate
         self._max_decode_len = hp.max_decode_len
         with tf.device(self._set_device):
             self._data_set = DataSet()
@@ -113,6 +120,9 @@ class Seq2Seq(object):
             elif self._mode == "predict":
                 self._predict_func()
             self._saver = tf.train.Saver()
+
+    def __repr__(self):
+        return "<This is Seq2Seq>"
 
     def _inputs(self):
         # encoder_inputs
@@ -243,7 +253,15 @@ class Seq2Seq(object):
             tf.summary.scalar("train_loss", self._loss)
 
             with tf.name_scope("train_op"):
-                optimizer = tf.train.AdamOptimizer(learning_rate=self._lr)
+                self._learning_rate = tf.train.exponential_decay(
+                    learning_rate=self._lr,
+                    global_step=self._global_step,
+                    decay_steps=self._decay_steps,
+                    decay_rate=self._decay_rate,
+                    staircase=True
+                )
+                tf.summary.scalar("learning_rate", self._learning_rate)
+                optimizer = tf.train.AdamOptimizer(learning_rate=self._learning_rate)
                 grads, variables = zip(*optimizer.compute_gradients(self._loss))
                 grads, global_norm = tf.clip_by_global_norm(grads, self._clip_norm)
                 self._train_op = optimizer.apply_gradients(zip(grads, variables), global_step=self._global_step)

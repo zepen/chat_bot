@@ -2,6 +2,7 @@
 """
 读取连接信息
 """
+import os
 import json
 from configparser import ConfigParser
 
@@ -10,7 +11,7 @@ class Connection(object):
 
     def __init__(self):
         self._config = ConfigParser()
-        self._config_path = "./config/"
+        self._config_path = os.path.dirname(__file__) + "/config/"
         self._object_str = "[INFO] This is connection object!"
 
     def __str__(self):

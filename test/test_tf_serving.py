@@ -2,9 +2,6 @@
 """
 测试tf_serving是否通畅
 """
-import os
-os.chdir("..")
-
 from utils.load_files import RuleCorrection
 from serve.docker_serve import predict_func, conn_tf_serving
 
