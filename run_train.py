@@ -127,6 +127,8 @@ def main(_):
     # 训练结束后转存为pd文件，在tensorflow-serving中加载
     tf.reset_default_graph()
     hp.mode = "predict"
+    hp.encoder_keep_prob = 1.0
+    hp.decoder_keep_prob = 1.0
     seq2seq_model_decode = Seq2Seq(hp=hp)
     with tf.Session() as sess:
         tf.tables_initializer().run()

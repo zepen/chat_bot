@@ -1,16 +1,22 @@
 ## 智能对话机器人
 #### 环境说明
-* python环境: python-3.5
+* python环境: python>=3.5
 * 依赖包见 requirements.txt
 
 #### 执行说明
-* step-1 训练模型，语料在corpus文件下，语料可替换，格式要与示例语料相同
+* step-1 语料清洗，原始语料，词表均在data文件中，通过调用百度语言模型API，剔除ppl较高的句子
+```bash
+cd data/
+python data_preprocessing
+```
+
+* step-2 训练模型，参数可通过命令行修改
 
  ```bash
-python run_train.py --model_version 001 --train_steps_num  # 指定模型版本和迭代轮次
+python run_train.py
  ```
 
-* step-2 启动机器人，访问 http://127.0.0.1:5000 测试界面
+* step-3 启动机器人，访问 http://127.0.0.1:5000 测试界面
 
   * 测试启动
   

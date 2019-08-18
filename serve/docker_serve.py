@@ -42,7 +42,7 @@ def docker_run(docker_file_path):
     os.chdir("..")
     path = os.getcwd().replace("\\", "/").replace(":", "").lower()
     mount_model = "--mount type=bind,source=/" + path + "/model/,target=/models/chat_bot"
-    mount_dict = "--mount type=bind,source=/" + path + "/dictionary/vocab_dict.txt,target=/dictionary/vocab_dict.txt"
+    mount_dict = "--mount type=bind,source=/" + path + "/data/vocab_dict.txt,target=/data/vocab_dict.txt"
     v_2 = "-v /" + path + "/data/:/var/lib/neo4j/import"
     e = "-e MODEL_NAME=chat_bot"
     DOCKER_RUN_TFS += " ".join([mount_model, mount_dict, e, "tensorflow/serving"])
@@ -84,4 +84,4 @@ def predict_func(input_text):
         ]
     }
     predict_res = get_predict_result(data)["predictions"]
-    return "".join([w for w in predict_res[0] if w != '_EOS_'])
+    return "".join([w for w in predict_res if w != '_EOS_'])

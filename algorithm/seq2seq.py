@@ -179,8 +179,8 @@ class Seq2Seq(object):
                 self._encoder_outputs, multiplier=self._beam_size)
             self._encoder_state = tf.contrib.seq2seq.tile_batch(
                 self._encoder_state, multiplier=self._beam_size)
-            self._encoder_inputs_length = tf.contrib.seq2seq.tile_batch(
-                self._encoder_inputs_length, multiplier=self._beam_size)
+            self.encoder_inputs_length = tf.contrib.seq2seq.tile_batch(
+                self.encoder_inputs_length, multiplier=self._beam_size)
 
         with tf.name_scope("attention"):
             attention_mechanism = tf.contrib.seq2seq.BahdanauAttention(
@@ -250,7 +250,11 @@ class Seq2Seq(object):
             with tf.name_scope("loss"):
                 self._loss = tf.contrib.seq2seq.sequence_loss(
                     logits=self._logits, targets=self.decoder_targets_ids, weights=self._mask)
-            tf.summary.scalar("train_loss", self._loss)
+                tf.summary.scalar("train_loss", self._loss)
+
+            with tf.name_scope("perplexity"):
+                self._perplexity = tf.exp(self._loss)
+                tf.summary.scalar("train_ppl", self._perplexity)
 
             with tf.name_scope("train_op"):
                 self._learning_rate = tf.train.exponential_decay(
@@ -298,16 +302,23 @@ class Seq2Seq(object):
             )
             if self._beam_search:
                 with tf.name_scope("prediction"):
+                    random_index = tf.cast(tf.random_uniform([], 0, self._beam_size), dtype=tf.int32)
+                    decoder_outputs = tf.cast(
+                        tf.transpose(decoder_outputs.predicted_ids, perm=[0, 2, 1]), dtype=tf.int64
+                    )[:, random_index, :]
+                    decoder_outputs = tf.gather_nd(
+                        decoder_outputs, tf.where(decoder_outputs > 1)
+                    )
                     self._prediction = self._data_set.index2string_table.lookup(
-                        tf.cast(
-                            tf.transpose(decoder_outputs.predicted_ids, perm=[0, 2, 1]),
-                            dtype=tf.int64
-                        )
+                        decoder_outputs
                     )
             else:
                 with tf.name_scope("prediction"):
+                    decoder_outputs = tf.gather_nd(
+                        decoder_outputs.sample_id, tf.where(decoder_outputs.sample_id > 1)
+                    )
                     self._prediction = self._data_set.index2string_table.lookup(
-                        tf.cast(decoder_outputs.sample_id, dtype=tf.int64)
+                        tf.cast(decoder_outputs, dtype=tf.int64)
                     )
 
     @property

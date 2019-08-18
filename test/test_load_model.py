@@ -6,7 +6,7 @@ import os
 import tensorflow as tf
 from algorithm.seq2seq import Seq2Seq
 from joblib import load
-# from tensorflow.contrib.seq2seq.python.ops import beam_search_ops
+from tensorflow.contrib.seq2seq.python.ops import beam_search_ops
 
 os.chdir("..")
 
@@ -17,9 +17,11 @@ with open("logs/hyper_parameters.pkl", "rb") as f:
 hp.device = "cpu"
 hp.gpu_no = "0"
 hp.layer_num = 3
-hp.beam_search = 0
+hp.beam_search = 1
 hp.beam_size = 5
 hp.mode = "predict"
+hp.encoder_keep_prob = 1.0
+hp.decoder_keep_prob = 1.0
 hp.max_decode_len = 100
 
 
@@ -55,11 +57,11 @@ def test_load_ckpt_model():
         ))
         sentence = sess.run(
             "predict/prediction/index_to_string_Lookup:0", feed_dict={
-                "inputs/inputs_sentence:0": [list("我心情不好了")],
+                "inputs/inputs_sentence:0": [list("想不想吃肯德基？")],
                 "inputs/encoder_inputs_length:0": [7],
                 "inputs/batch_size:0": [1]}
         )
-        print("Decode Result: {}".format("".join([w.decode("utf-8") for w in sentence[0]])))
+        print("Decode Result: {}".format("".join([w.decode("utf-8") for w in sentence])))
 
 
 def test_load_pb_model():
@@ -90,4 +92,4 @@ def test_load_pb_model():
                 "inputs/encoder_inputs_length:0": [7],
                 "inputs/batch_size:0": [1]}
         )
-        print("Decode Result: {}".format("".join([w.decode("utf-8") for w in sentence[0]])))
+        print("Decode Result: {}".format("".join([w.decode("utf-8") for w in sentence])))
