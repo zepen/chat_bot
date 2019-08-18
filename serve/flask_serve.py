@@ -43,7 +43,7 @@ def generate_response(input_text):
     if len(response):
         response_ppl = baidu_dnn_lm.get_ppl(response)
         print(response_ppl)
-        if response_ppl < 500:
+        if response_ppl < 1500:
             return rule_c.replace_name(response)
         else:
             return rule_c.replace_content()

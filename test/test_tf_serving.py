@@ -13,5 +13,5 @@ def test_get_tf_serving():
     # 请求1000次，查看返回结果
     for _ in range(1000):
         print("[Response]: {}".format(
-            predict_func("今天天气很好!"))
+            predict_func("你了解什么？"))
         )
