@@ -88,7 +88,7 @@ def test_load_pb_model():
         ))
         sentence = sess.run(
             "predict/prediction/index_to_string_Lookup:0", feed_dict={
-                "inputs/inputs_sentence:0": [list("你好")],
+                "inputs/inputs_sentence:0": [list("你真好")],
                 "inputs/encoder_inputs_length:0": [7],
                 "inputs/batch_size:0": [1]}
         )

@@ -18,6 +18,8 @@ api = Blueprint('api', __name__)
 
 
 ltp = Ltp()
+INPUT_TEXT_PPL = 3000
+OUTPUT_TEXT_PPL = 3000
 baidu_dnn_lm = BaiduDnnLM()
 rule_c = RuleCorrection()
 
@@ -43,7 +45,7 @@ def generate_response(input_text):
     if len(response):
         response_ppl = baidu_dnn_lm.get_ppl(response)
         print(response_ppl)
-        if response_ppl < 1500:
+        if response_ppl < OUTPUT_TEXT_PPL:
             return rule_c.replace_name(response)
         else:
             return rule_c.replace_content()
@@ -77,7 +79,7 @@ def response_info():
             if entity:
                 return information_retrieval(entity)
             input_text_ppl = baidu_dnn_lm.get_ppl(input_text)
-            if input_text_ppl < 500:
+            if input_text_ppl < INPUT_TEXT_PPL:
                 return generate_response(input_text)
             else:
                 return rule_c.replace_content()
