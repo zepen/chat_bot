@@ -17,8 +17,8 @@ with open("logs/hyper_parameters.pkl", "rb") as f:
 hp.device = "cpu"
 hp.gpu_no = "0"
 hp.layer_num = 3
-hp.beam_search = 1
-hp.beam_size = 5
+hp.beam_search = 0
+hp.beam_size = 100
 hp.mode = "predict"
 hp.encoder_keep_prob = 1.0
 hp.decoder_keep_prob = 1.0
@@ -57,7 +57,7 @@ def test_load_ckpt_model():
         ))
         sentence = sess.run(
             "predict/prediction/index_to_string_Lookup:0", feed_dict={
-                "inputs/inputs_sentence:0": [list("你好")],
+                "inputs/inputs_sentence:0": [list("给我介绍个女朋友")],
                 "inputs/encoder_inputs_length:0": [7],
                 "inputs/batch_size:0": [1]}
         )
@@ -88,7 +88,7 @@ def test_load_pb_model():
         ))
         sentence = sess.run(
             "predict/prediction/index_to_string_Lookup:0", feed_dict={
-                "inputs/inputs_sentence:0": [list("你真好")],
+                "inputs/inputs_sentence:0": [list("为什么？你会这样子？")],
                 "inputs/encoder_inputs_length:0": [7],
                 "inputs/batch_size:0": [1]}
         )

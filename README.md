@@ -4,7 +4,8 @@
 * 依赖包见 requirements.txt
 
 #### 执行说明
-* step-1 语料清洗，原始语料，词表均在data文件中，通过调用百度语言模型API，剔除ppl较高的句子
+* step-1 语料清洗，原始语料，词表均在data文件中，这里参考了 [https://github.com/15727763396/Seq2SeqModel](https://github.com/15727763396/Seq2SeqModel)语料清洗规则，这部分很关键。
+语料不做清洗，损失函数很难继续下降。
 ```bash
 cd data/
 python data_preprocessing
