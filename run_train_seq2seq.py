@@ -82,7 +82,7 @@ def train_model():
         writer = tf.summary.FileWriter("logs/{}/".format(model_type), graph=sess.graph)
         merge_all = tf.summary.merge_all()
         sess.run([tf.tables_initializer(), seq2seq_train.data_set.iterator.initializer])
-        seq2seq_train.load_model(sess)
+        seq2seq_train.load_model(sess, model_type)
         tf.logging.info("Please open tensorboard to Supervisor train processing...")
         step = 1
         cost_time = 0

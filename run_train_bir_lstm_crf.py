@@ -71,7 +71,7 @@ def train_model():
         writer = tf.summary.FileWriter("logs/{}/".format(model_type), graph=sess.graph)
         merge_all = tf.summary.merge_all()
         sess.run([tf.tables_initializer(), bir_lstm_crf_train.data_set.iterator.initializer])
-        bir_lstm_crf_train.load_model(sess)
+        bir_lstm_crf_train.load_model(sess, model_type)
         tf.logging.info("Please open tensorboard to Supervisor train processing...")
         step = 1
         cost_time = 0
