@@ -12,7 +12,7 @@ from joblib import dump
 model_type = "bir_lstm_crf"
 tf.flags.DEFINE_string('device', 'cpu', "设定训练设备")
 tf.flags.DEFINE_integer('gpu_no', 0, "设置使用GPU编号")
-tf.flags.DEFINE_float("learning_rate", 0.002, "初始学习速率")
+tf.flags.DEFINE_float("learning_rate", 0.001, "初始学习速率")
 tf.flags.DEFINE_float("clip_norm", 5, "梯度裁剪率")
 tf.flags.DEFINE_integer('epoch', 20, "训练迭代轮数")
 tf.flags.DEFINE_integer('embedding_size', 256, "嵌入层节点数目")
@@ -118,7 +118,7 @@ def main(_):
     with tf.Session() as sess:
         tf.tables_initializer().run()
         sess.run(tf.global_variables_initializer())
-        seq2seq_model_decode.load_model(sess)
+        seq2seq_model_decode.load_model(sess, model_type)
         seq2seq_model_decode.export_model_to_pb(
             sess,
             save_path="model/{}/".format(model_type),

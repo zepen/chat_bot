@@ -151,23 +151,24 @@ class BirLstmCrf(object):
             self._decoder()
 
     def _train_func(self):
-        with tf.name_scope("loss"):
-            self._loss = tf.reduce_mean(-self._log_likelihood, name="loss")
-        tf.summary.scalar("loss", self._loss)
+        with tf.name_scope("train"):
+            with tf.name_scope("loss"):
+                self._loss = tf.reduce_mean(-self._log_likelihood, name="loss")
+            tf.summary.scalar("train_loss", self._loss)
 
-        with tf.name_scope("train_op"):
-            self._learning_rate = tf.train.exponential_decay(
-                learning_rate=self._lr,
-                global_step=self._global_step,
-                decay_steps=self._decay_steps,
-                decay_rate=self._decay_rate,
-                staircase=True
-            )
-            tf.summary.scalar("learning_rate", self._learning_rate)
-            optimizer = tf.train.AdamOptimizer(learning_rate=self._learning_rate)
-            grads, variables = zip(*optimizer.compute_gradients(self._loss))
-            grads, global_norm = tf.clip_by_global_norm(grads, self._clip_norm)
-            self._train_op = optimizer.apply_gradients(zip(grads, variables), global_step=self._global_step)
+            with tf.name_scope("train_op"):
+                self._learning_rate = tf.train.exponential_decay(
+                    learning_rate=self._lr,
+                    global_step=self._global_step,
+                    decay_steps=self._decay_steps,
+                    decay_rate=self._decay_rate,
+                    staircase=True
+                )
+                tf.summary.scalar("learning_rate", self._learning_rate)
+                optimizer = tf.train.AdamOptimizer(learning_rate=self._learning_rate)
+                grads, variables = zip(*optimizer.compute_gradients(self._loss))
+                grads, global_norm = tf.clip_by_global_norm(grads, self._clip_norm)
+                self._train_op = optimizer.apply_gradients(zip(grads, variables), global_step=self._global_step)
 
     def _predict_func(self):
         with tf.name_scope("predict"):
