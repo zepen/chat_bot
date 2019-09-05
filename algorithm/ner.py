@@ -14,16 +14,6 @@ class NerModel(object):
         return self._object_str
 
 
-class BirLstmCrf(NerModel):
-
-    def __init__(self):
-        super().__init__()
-        self._object_str = "[INFO] This is bir_lstm_crf object!"
-
-    def __repr__(self):
-        return self._object_str
-
-
 class Ltp(NerModel):
 
     def __init__(self):

@@ -3,6 +3,7 @@
 定义seq2seq模型
 """
 import tensorflow as tf
+from .base import BaseDataSet
 
 
 class HyperParameters(object):
@@ -29,21 +30,14 @@ class HyperParameters(object):
     max_decode_len = 0
 
 
-class DataSet(object):
+class Seq2SeqDataSet(BaseDataSet):
 
     def __init__(self):
-        self.data_path = "./data/"
-        with tf.gfile.GFile(self.data_path + "vocab_dict.txt") as f:
-            self._vocab_size = len(f.readlines())
-        self._string2index_table = tf.contrib.lookup.string_to_index_table_from_file(
-            vocabulary_file=self.data_path + "vocab_dict.txt", num_oov_buckets=0, default_value=1)
-        self._index2string_table = tf.contrib.lookup.index_to_string_table_from_file(
-            vocabulary_file=self.data_path + "vocab_dict.txt")
+        super(Seq2SeqDataSet, self).__init__()
         self._text_line = tf.data.TextLineDataset(self.data_path + "train_corpus.txt")
-        self._iterator = None
 
     def __repr__(self):
-        return "<This is DataSet>"
+        return "<This is Seq2SeqDataSet>"
 
     def _process_func(self, string):
         """  预处理函数
@@ -73,22 +67,6 @@ class DataSet(object):
         )
         self._iterator = data_set.make_initializable_iterator()
 
-    @property
-    def vocab_size(self):
-        return self._vocab_size
-
-    @property
-    def string2index_table(self):
-        return self._string2index_table
-
-    @property
-    def index2string_table(self):
-        return self._index2string_table
-
-    @property
-    def iterator(self):
-        return self._iterator
-
 
 class Seq2Seq(object):
 
@@ -110,7 +88,7 @@ class Seq2Seq(object):
         self._decay_rate = hp.decay_rate
         self._max_decode_len = hp.max_decode_len
         with tf.device(self._set_device):
-            self._data_set = DataSet()
+            self._data_set = Seq2SeqDataSet()
             self._build_model()
             if self._mode == "train":
                 self._lr = hp.lr
@@ -353,28 +331,34 @@ class Seq2Seq(object):
         except Exception as e:
             tf.logging.error("[SAVER_MODEL] {}".format(str(e)))
 
-    def load_model(self, sess):
+    def load_model(self, sess, model_name):
         """  加载模型
 
         :param sess:
+        :param model_name: 模型名称
         :return:
         """
         try:
-            self._saver.restore(sess, tf.train.latest_checkpoint("logs/model/"))
+            self._saver.restore(sess, tf.train.latest_checkpoint("logs/{}".format(model_name)))
         except Exception as e:
             sess.run(tf.global_variables_initializer())
             tf.logging.error("[LOAD_MODEL] {}".format(str(e)))
 
     @staticmethod
-    def load_pb_model(sess, model_version):
+    def load_pb_model(sess, model_name, model_version):
         """  加载pb模型
 
         :param sess:
-        :param model_version:
+        :param model_name: 模型名称
+        :param model_version: 模型版本
         :return:
         """
         try:
-            tf.saved_model.loader.load(sess, [tf.saved_model.tag_constants.SERVING], "model/" + model_version)
+            tf.saved_model.loader.load(
+                sess,
+                [tf.saved_model.tag_constants.SERVING],
+                "model/{}/{}".format(model_name, model_version)
+            )
         except Exception as e:
             tf.logging.error("[LOAD_PB_MODEL] {}".format(str(e)))
 

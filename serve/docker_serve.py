@@ -83,5 +83,6 @@ def predict_func(input_text):
             },
         ]
     }
+    print(get_predict_result(data))
     predict_res = get_predict_result(data)["predictions"]
     return "".join([w for w in predict_res if w != '_EOS_'])

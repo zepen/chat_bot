@@ -5,6 +5,7 @@
 import os
 import tensorflow as tf
 from algorithm.seq2seq import Seq2Seq
+from algorithm.bir_lstm_crf import BirLstmCrf
 from joblib import load
 from tensorflow.contrib.seq2seq.python.ops import beam_search_ops
 
@@ -17,7 +18,7 @@ with open("logs/hyper_parameters.pkl", "rb") as f:
 hp.device = "cpu"
 hp.gpu_no = "0"
 hp.layer_num = 3
-hp.beam_search = 0
+hp.beam_search = 1
 hp.beam_size = 100
 hp.mode = "predict"
 hp.encoder_keep_prob = 1.0
@@ -66,7 +67,7 @@ def test_load_ckpt_model():
 
 def test_load_pb_model():
     with tf.Session(graph=tf.Graph()) as sess:
-        tf.saved_model.loader.load(sess, [tf.saved_model.tag_constants.SERVING],  "model/001/")
+        tf.saved_model.loader.load(sess, [tf.saved_model.tag_constants.SERVING],  "model/003/")
         # for tensor in tf.get_default_graph().as_graph_def().node:
         #     print(tensor.name)
         print(sess.graph.get_tensor_by_name("inputs/encoder_inputs:0"))
