@@ -339,7 +339,7 @@ class Seq2Seq(object):
         :return:
         """
         try:
-            self._saver.restore(sess, tf.train.latest_checkpoint("logs/{}".format(model_name)))
+            self._saver.restore(sess, tf.train.latest_checkpoint("logs/{}/ckpt/".format(model_name)))
         except Exception as e:
             sess.run(tf.global_variables_initializer())
             tf.logging.error("[LOAD_MODEL] {}".format(str(e)))

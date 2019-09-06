@@ -108,7 +108,9 @@ def train_model():
                 cost_time += (end_time - start_time)
                 writer.add_summary(summary, step)
                 if step % FLAGS.save_step == 0:
-                    seq2seq_train.save_model(sess, save_path="logs/{}/{}.ckpt".format(model_type, model_type))
+                    if not os.path.exists("logs/{}/ckpt".format(model_type)):
+                        os.mkdir("logs/{}/ckpt".format(model_type))
+                    seq2seq_train.save_model(sess, save_path="logs/{}/ckpt/{}.ckpt".format(model_type, model_type))
                     tf.logging.info("[step: {}, {} step/sec]".format(
                         step, round(FLAGS.save_step / cost_time, 4))
                     )

@@ -154,7 +154,7 @@ class BirLstmCrf(object):
         with tf.name_scope("train"):
             with tf.name_scope("loss"):
                 self._loss = tf.reduce_mean(-self._log_likelihood, name="loss")
-            tf.summary.scalar("train_loss", self._loss)
+                tf.summary.scalar("train_loss", self._loss)
 
             with tf.name_scope("train_op"):
                 self._learning_rate = tf.train.exponential_decay(
@@ -217,7 +217,7 @@ class BirLstmCrf(object):
         :return:
         """
         try:
-            self._saver.restore(sess, tf.train.latest_checkpoint("logs/{}".format(model_name)))
+            self._saver.restore(sess, tf.train.latest_checkpoint("logs/{}/ckpt/".format(model_name)))
         except Exception as e:
             sess.run(tf.global_variables_initializer())
             tf.logging.error("[LOAD_MODEL] {}".format(str(e)))
