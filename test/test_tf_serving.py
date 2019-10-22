@@ -1,17 +1,31 @@
 # -*- coding: utf-8 -*-
 """
-测试tf_serving是否通畅
+采用locust测试对服务进行压力测试
+pip install locust
+locust -f test_tf_serving
 """
-from utils.load_files import RuleCorrection
-from serve.docker_serve import predict_func, conn_tf_serving
-
-rule_c = RuleCorrection()
-print("URL {}".format(conn_tf_serving.url))
+from locust import HttpLocust, TaskSet, task
 
 
-def test_get_tf_serving():
-    # 请求1000次，查看返回结果
-    for _ in range(1000):
-        print("[Response]: {}".format(
-            predict_func("你了解什么？"))
-        )
+class UserTasks(TaskSet):
+
+    @task
+    def get_r(self):
+        url = '/v1/models/chat_bot:predict'
+        data = {
+            "instances": [
+                {
+                    "encoder_inputs": list("你是谁"),
+                    "encoder_inputs_length": 3,
+                    "batch_size": 1
+                },
+            ]
+        }
+        self.client.post(url, json=data)
+
+
+class WebsiteUser(HttpLocust):
+    host = "http://127.0.0.1:8501"
+    min_wait = 2000
+    max_wait = 5000
+    task_set = UserTasks

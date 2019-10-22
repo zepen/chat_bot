@@ -41,7 +41,7 @@ def docker_run(docker_file_path):
     docker_build(docker_file_path)
     os.chdir("..")
     path = os.getcwd().replace("\\", "/").replace(":", "").lower()
-    mount_model = "--mount type=bind,source=/" + path + "/model/,target=/models/chat_bot"
+    mount_model = "--mount type=bind,source=/" + path + "/model/seq2seq/,target=/models/chat_bot"
     mount_dict = "--mount type=bind,source=/" + path + "/data/vocab_dict.txt,target=/data/vocab_dict.txt"
     v_2 = "-v /" + path + "/data/:/var/lib/neo4j/import"
     e = "-e MODEL_NAME=chat_bot"
