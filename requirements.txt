@@ -1,7 +1,7 @@
 locust
 joblib
 pydub==0.23.1
-numpy==1.15.1
+numpy==1.22.0
 baidu-aip==2.2.13.0
 pyltp==0.2.1
 py2neo==4.2.0
